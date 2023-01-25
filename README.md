@@ -2,9 +2,10 @@
 This is our brackets app for Intro to Software Engineering Spring 2023 @ UF
 
 ## Project Members
-### Front-end
-### Back-end 
-Carlos Avila
-Connor Munjed
+### 
+Logan Bialek - Front-end/
+### 
+Carlos Avila - Back-end/
+Connor Munjed - Back-end/
 
 ## Project Description
