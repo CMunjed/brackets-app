@@ -5,5 +5,6 @@ This is our brackets app for Intro to Software Engineering Spring 2023 @ UF
 ### Front-end
 ### Back-end 
 Carlos Avila
+Connor Munjed
 
 ## Project Description
