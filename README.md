@@ -1,18 +1,17 @@
 # brackets-app
-This is our brackets app for Intro to Software Engineering Spring 2023 @ UF
+This is our brackets app for CEN3031 Intro to Software Engineering Spring 2023 @ UF.
+
+## Project Description
+This is an online tournament bracket creation tool with an emphasis on flexibility, customizability, and ease of use. <br /><br />
+
+The goal is to create a product that is more user-friendly and intuitive than existing alternatives. For example, this tool will allow modification of existing brackets, a feature which is surprisingly scarce among alternatives. We plan to include a wide range of functionality, including a large selection of tournament styles such as single elimination, double elimination, round robin, etc., the ability to input, change, and customize contestant information and bracket configurations, the ability to merge existing brackets, the ability to randomize/shuffle brackets, and more.<br /><br />
+
+This tool will utilize Angular for the front-end and Go for the back-end.
 
 ## Project Members
-
 Logan Bialek - Front-end <br />
 Shawn Banks - Front-end <br />
 Carlos Avila - Back-end <br />
 Connor Munjed - Back-end <br />
 CEN3031 - Group 74 <br />
-
-## Project Description
-This project will be utilizing Angular for the frontend and Golang for the backend. <br /><br />
-This tool is an online tournament bracket creation tool that can be used to facilitate the ease of use in bracket generation. <br />
-The goal is to create a user friendly bracket because most brackets we that are used are set upon creation and are hard to use. <br />
-We want to make it easy for the user to create a adjustable bracket which is lacking in most functionality of others, a bracket that can be created based on inserted values/stats. <br />
-Also allow the use of randomizing the brackets. Different Formated brackets types (ex. two way, one way, etc.). And maybe the possiblity of merging brackets.
 
