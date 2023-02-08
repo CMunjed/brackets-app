@@ -10,10 +10,9 @@ import (
 	//"github.com/api/config"
 	"example.com/api/app/handler"
 	"example.com/api/app/model"
-	"example.com/api/config"
 	"github.com/gorilla/mux"
-	"gorm.io/gorm"
 	"gorm.io/driver/sqlite"
+	"gorm.io/gorm"
 )
 
 // App has router and db instances
@@ -23,15 +22,9 @@ type App struct {
 }
 
 // App initialize with predefined configuration
-func (a *App) Initialize(config *config.Config) {
-	dbURI := "database.db"
-	//fmt.Sprintf("%s:%s@/%s?charset=%s&parseTime=True",
-	//	config.DB.Username,
-	//	config.DB.Password,
-	//	config.DB.Name,
-	//	config.DB.Charset)
+func (a *App) Initialize() {
 
-	db, err := gorm.Open(sqlite.Open(dbURI), &gorm.Config{})
+	db, err := gorm.Open(sqlite.Open("database.db"), &gorm.Config{})
 	if err != nil {
 		log.Fatal("Could not connect database")
 	}
