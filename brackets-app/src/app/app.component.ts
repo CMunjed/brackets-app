@@ -7,11 +7,11 @@ export interface PeriodicElement {
   
 }
 const ELEMENT_DATA: PeriodicElement[] = [
-  {position: 1, name: 'Gators', score: 10079},
-  {position: 2, name: 'Bucks', score: 400.26},
+  {position: 1, name: 'Gators', score: 100.79},
+  {position: 2, name: 'Bucks', score: 90.26},
   {position: 3, name: 'Packers', score: 69.41},
-  {position: 4, name: 'Blue Devils', score: 9.0122},
-  {position: 5, name: 'Honey Badgers', score: 1.0811},
+  {position: 4, name: 'Blue Devils', score: 59.0122},
+  {position: 5, name: 'Honey Badgers', score: 51.0811},
   
 ];
 
