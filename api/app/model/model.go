@@ -2,15 +2,14 @@ package model
 
 import (
 	"gorm.io/gorm"
-	//"gorm.io/driver/sqlite"
 )
 
 type Employee struct {
 	gorm.Model
-	Name string `gorm:"unique" json:"name"`
-	City string `json:"city"`
-	Age int `json:"age"`
-	Status bool `json:"status"`
+	Name   string `gorm:"unique" json:"name"`
+	City   string `json:"city"`
+	Age    int    `json:"age"`
+	Status bool   `json:"status"`
 }
 
 func (e *Employee) Disable() {
