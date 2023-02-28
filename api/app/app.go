@@ -33,13 +33,21 @@ func (a *App) Initialize() {
 // Set all required routers
 func (a *App) setRouters() {
 	// Routing for handling the projects
-	a.Get("/employees", a.GetAllEmployees)
+	
+	/*a.Get("/employees", a.GetAllEmployees)
 	a.Post("/employees", a.CreateEmployee)
 	a.Get("/employees/{name}", a.GetEmployee)
 	a.Put("/employees/{name}", a.UpdateEmployee)
 	a.Delete("/employees/{name}", a.DeleteEmployee)
 	a.Put("/employees/{name}/disable", a.DisableEmployee)
-	a.Put("/employees/{name}/enable", a.EnableEmployee)
+	a.Put("/employees/{name}/enable", a.EnableEmployee)*/
+	a.Post("/users/signup", a.SignUp)
+	a.Put("/users/signin", a.SignIn) // Put operation because sessions
+	a.Get("/users", a.GetAllUsers)
+	a.Get("/users/{username}", a.GetUser) // Might change from username to UUID as identifier
+	a.Put("/users/{username}", a.UpdateUser)
+	a.Delete("/users/{username}", a.DeleteUser)
+	//Enable and disable are overkill, not necessary
 }
 
 // Wrap the router for GET method
@@ -62,8 +70,11 @@ func (a *App) Delete(path string, f func(w http.ResponseWriter, r *http.Request)
 	a.Router.HandleFunc(path, f).Methods("DELETE")
 }
 
+//Handlers to manage User Data
+
+
 // Handlers to manage Employee Data
-func (a *App) GetAllEmployees(w http.ResponseWriter, r *http.Request) {
+/*func (a *App) GetAllEmployees(w http.ResponseWriter, r *http.Request) {
 	handler.GetAllEmployees(a.DB, w, r)
 }
 
@@ -89,6 +100,26 @@ func (a *App) DisableEmployee(w http.ResponseWriter, r *http.Request) {
 
 func (a *App) EnableEmployee(w http.ResponseWriter, r *http.Request) {
 	handler.EnableEmployee(a.DB, w, r)
+}*/
+
+//Handlers for user data
+func (a *App) SignUp(w http.ResponseWriter, r *http.Request) {
+	handler.SignUp(a.DB, w, r)
+}
+func (a *App) SignIn(w http.ResponseWriter, r *http.Request) {
+	handler.SignIn(a.DB, w, r)
+}
+func (a *App) GetAllUsers(w http.ResponseWriter, r *http.Request) {
+	handler.GetAllUsers(a.DB, w, r)
+}
+func (a *App) GetUser(w http.ResponseWriter, r *http.Request) {
+	handler.GetUser(a.DB, w, r)
+}
+func (a *App) UpdateUser(w http.ResponseWriter, r *http.Request) {
+	handler.UpdateUser(a.DB, w, r)
+}
+func (a *App) DeleteUser(w http.ResponseWriter, r *http.Request) {
+	handler.DeleteUser(a.DB, w, r)
 }
 
 // Run the app on it's router

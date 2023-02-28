@@ -1,5 +1,5 @@
 package handler
-
+/*
 import (
 	"encoding/json"
 	"net/http"
@@ -122,3 +122,4 @@ func getEmployeeOr404(db *gorm.DB, name string, w http.ResponseWriter, r *http.R
 	}
 	return &employee
 }
+*/
