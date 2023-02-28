@@ -22,7 +22,30 @@ type User struct {
 	Status bool   `json:"status"`
 }*/
 
+<<<<<<< Updated upstream
 /*func (e *Employee) Disable() {
+=======
+type Team struct {
+	gorm.Model
+	Name       string `json:"name"`
+	Index      int    `json:"index"`
+	Round      int    `json:"round"`
+	Position   int    `json:"position"`
+	Eliminated bool   `json:"eliminated"`
+}
+
+type Bracket struct {
+	gorm.Model
+	Name      string `json:"name"`
+	BracketID string `gorm:"unique" json:"bracketid"`
+	UserID    string `json:"userid"`
+	Size      int    `json:"size"`
+	Matches   int    `json:"matches"`
+	Teams     []Team `json:"teams"`
+}
+
+func (e *Employee) Disable() {
+>>>>>>> Stashed changes
 	e.Status = false
 }
 
