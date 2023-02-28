@@ -31,6 +31,15 @@ func findBracket(db *gorm.DB, w http.ResponseWriter, r *http.Request) *model.Bra
 	return bracket
 }
 
+// saveBracket saves the bracket to a database and returns the saved bracket, or it responds with an Internal Server Error
+func saveBracket(db *gorm.DB, w http.ResponseWriter, b *model.Bracket) {
+	if err := db.Save(b).Error; err != nil {
+		respondError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+	respondJSON(w, http.StatusOK, *b)
+}
+
 // GetBracket Returns a bracket in JSON formatting
 func GetBracket(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 	bracket := findBracket(db, w, r)
@@ -39,12 +48,29 @@ func GetBracket(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// GetUserBrackets returns all the brackets tied to a user
+func GetUserBrackets(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
+	userBrackets := []model.Bracket{}
+	vars := mux.Vars(r)
+
+	db.Find(&userBrackets, vars["userid"])
+	respondJSON(w, http.StatusOK, userBrackets)
+}
+
+// GetAllBrackets returns all of the brackets in the database
+func GetAllBrackets(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
+	brackets := []model.Bracket{}
+	db.Find(&brackets)
+	respondJSON(w, http.StatusOK, brackets)
+}
+
+// CreateBracket takes in a json and uses it to create a bracket
 func CreateBracket(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	bracket := model.Bracket{}
 
 	name := vars["name"]
-	userID := vars["userID"]
+	userID := vars["userid"]
 	sizeString := vars["size"]
 	size, err := strconv.Atoi(sizeString)
 	if err != nil {
@@ -58,15 +84,32 @@ func CreateBracket(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 	bracket.Matches = int(math.Ceil(math.Log2(float64(size))))
 	bracket.BracketID = uuid.New().String()
 
-	if err := db.Save(&bracket).Error; err != nil {
-		respondError(w, http.StatusInternalServerError, err.Error())
-		return
-	}
-	respondJSON(w, http.StatusOK, bracket)
+	saveBracket(db, w, &bracket)
 }
 
-/*
-func getUserBrackets()
-search the database for all the brackets with the same userID
-return the selected brackets
-*/
+// AddTeam adds a team to a bracket and saves said bracket
+func AddTeam(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	bracket := findBracket(db, w, r)
+	if bracket != nil && len(bracket.Teams) < bracket.Size {
+		team := model.Team{}
+
+		team.Name = vars["teamName"]
+		team.Position = len(bracket.Teams)
+		team.Index = len(bracket.Teams) - 1
+		team.Round = 1
+		team.Eliminated = false
+		bracket.Teams = append(bracket.Teams, team)
+		saveBracket(db, w, bracket)
+	}
+}
+
+// EditTeam edits a team within a bracket
+/*func EditTeam(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	bracket := findBracket(db, w, r)
+	if bracket != nil {
+		index := vars["index"]
+
+	}
+}*/

@@ -5,9 +5,10 @@ import (
 	"net/http"
 
 	"example.com/api/app/model"
+	"github.com/google/uuid"
 	"github.com/gorilla/mux"
-	"gorm.io/gorm"
 	"golang.org/x/crypto/bcrypt"
+	"gorm.io/gorm"
 )
 
 func GetAllUsers(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
@@ -33,6 +34,8 @@ func SignUp(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 
 	user.Password = string(hashedPassword) // Is changing the user object's password to the hashed version the best way to pass the data to the db?
 
+	user.UUID = uuid.New().String() // This creates a unique UUID tied to the user account, allowing for changes to usernames and emails without loosing user data
+
 	// These lines changed from tutorial, insert new user into database
 	if err := db.Save(&user).Error; err != nil {
 		respondError(w, http.StatusInternalServerError, err.Error())
@@ -46,7 +49,7 @@ func SignUp(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 func SignIn(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 	// Parse request into User instance
 	user := model.User{}
-	err := json.NewDecoder(r.Body).Decode(&user) 
+	err := json.NewDecoder(r.Body).Decode(&user)
 	if err != nil {
 		// If there is something wrong with the request body, return a 400 status
 		//w.WriteHeader(http.StatusBadRequest)

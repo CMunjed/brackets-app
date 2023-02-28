@@ -4,16 +4,6 @@ import (
 	"gorm.io/gorm"
 )
 
-type User struct {
-	gorm.Model
-	//Email   string `gorm:"unique" json:"email"`
-	Username   string `gorm:"unique" json:"username"`
-	Password   string `json:"password"`
-	//UUID   string `gorm:"unique" json:"uuid"`
-	//UUID   int `gorm:"unique" json:"uuid"`
-	//Status bool   `json:"status"`
-}
-
 /*type Employee struct {
 	gorm.Model
 	Name   string `gorm:"unique" json:"name"`
@@ -22,9 +12,16 @@ type User struct {
 	Status bool   `json:"status"`
 }*/
 
-<<<<<<< Updated upstream
-/*func (e *Employee) Disable() {
-=======
+type User struct {
+	gorm.Model
+	//Email   string `gorm:"unique" json:"email"`
+	Username string `gorm:"unique" json:"username"`
+	Password string `json:"password"`
+	UUID     string `gorm:"unique" json:"uuid"`
+	//UUID   int `gorm:"unique" json:"uuid"`
+	//Status bool   `json:"status"`
+}
+
 type Team struct {
 	gorm.Model
 	Name       string `json:"name"`
@@ -44,8 +41,9 @@ type Bracket struct {
 	Teams     []Team `json:"teams"`
 }
 
-func (e *Employee) Disable() {
->>>>>>> Stashed changes
+/*
+
+/*func (e *Employee) Disable() {
 	e.Status = false
 }
 
