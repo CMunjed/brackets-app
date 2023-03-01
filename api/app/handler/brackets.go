@@ -1,9 +1,9 @@
 package handler
 
 import (
+	"encoding/json"
 	"math"
 	"net/http"
-	"strconv"
 
 	"example.com/api/app/model"
 	"github.com/google/uuid"
@@ -66,50 +66,49 @@ func GetAllBrackets(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 
 // CreateBracket takes in a json and uses it to create a bracket
 func CreateBracket(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
 	bracket := model.Bracket{}
 
-	name := vars["name"]
-	userID := vars["userid"]
-	sizeString := vars["size"]
-	size, err := strconv.Atoi(sizeString)
-	if err != nil {
+	decoder := json.NewDecoder(r.Body)
+	if err := decoder.Decode(&bracket); err != nil {
 		respondError(w, http.StatusBadRequest, err.Error())
 		return
 	}
+	defer r.Body.Close()
 
-	bracket.Name = name
-	bracket.UserID = userID
-	bracket.Size = size
-	bracket.Matches = int(math.Ceil(math.Log2(float64(size))))
+	bracket.Matches = int(math.Ceil(math.Log2(float64(bracket.Size))))
 	bracket.BracketID = uuid.New().String()
 
 	saveBracket(db, w, &bracket)
 }
 
-// AddTeam adds a team to a bracket and saves said bracket
-func AddTeam(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
+// UpdateBracket updates the parameters of a bracket
+func UpdateBracket(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 	bracket := findBracket(db, w, r)
-	if bracket != nil && len(bracket.Teams) < bracket.Size {
-		team := model.Team{}
 
-		team.Name = vars["teamName"]
-		team.Position = len(bracket.Teams)
-		team.Index = len(bracket.Teams) - 1
-		team.Round = 1
-		team.Eliminated = false
-		bracket.Teams = append(bracket.Teams, team)
+	if bracket != nil {
+		decoder := json.NewDecoder(r.Body)
+		if err := decoder.Decode(&bracket); err != nil {
+			respondError(w, http.StatusBadRequest, err.Error())
+			return
+		}
+		defer r.Body.Close()
+
 		saveBracket(db, w, bracket)
 	}
 }
 
-// EditTeam edits a team within a bracket
-/*func EditTeam(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
+// DeleteBracket deletes a bracket from the database
+func DeleteBracket(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
-	bracket := findBracket(db, w, r)
-	if bracket != nil {
-		index := vars["index"]
 
+	bracketID := vars["bracketid"]
+	bracket := getBracketOr404(db, bracketID, w, r)
+	if bracket == nil {
+		return
 	}
-}*/
+	if err := db.Delete(&bracket).Error; err != nil {
+		respondError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+	respondJSON(w, http.StatusNoContent, nil)
+}

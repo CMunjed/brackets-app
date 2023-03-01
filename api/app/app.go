@@ -33,7 +33,7 @@ func (a *App) Initialize() {
 // Set all required routers
 func (a *App) setRouters() {
 	// Routing for handling the projects
-	
+
 	/*a.Get("/employees", a.GetAllEmployees)
 	a.Post("/employees", a.CreateEmployee)
 	a.Get("/employees/{name}", a.GetEmployee)
@@ -47,6 +47,18 @@ func (a *App) setRouters() {
 	a.Get("/users/{username}", a.GetUser) // Might change from username to UUID as identifier
 	a.Put("/users/{username}", a.UpdateUser)
 	a.Delete("/users/{username}", a.DeleteUser)
+	a.Post("/brackets", a.CreateBracket)
+	a.Get("/brackets", a.GetAllBrackets)
+	a.Get("/brackets/{userid}", a.GetUserBrackets)
+	a.Put("/brackets/{bracketid}", a.UpdateBracket)
+	a.Get("/brackets/{bracketid}", a.GetBracket)
+	a.Delete("/brackets/{bracketid}", a.DeleteBracket)
+	a.Post("/brackets/{bracketid}/teams", a.AddTeam)
+	a.Get("/brackets/{bracketid}/teams", a.GetAllTeams)
+	a.Get("/brackets/{bracketid}/teams/{index}", a.GetTeam)
+	a.Put("/brackets/{bracketid}/teams/{index}", a.UpdateTeam)
+	a.Delete("/brackets/{bracketid}/teams/{index}", a.DeleteBracket)
+
 	//Enable and disable are overkill, not necessary
 }
 
@@ -71,7 +83,6 @@ func (a *App) Delete(path string, f func(w http.ResponseWriter, r *http.Request)
 }
 
 //Handlers to manage User Data
-
 
 // Handlers to manage Employee Data
 /*func (a *App) GetAllEmployees(w http.ResponseWriter, r *http.Request) {
@@ -102,7 +113,7 @@ func (a *App) EnableEmployee(w http.ResponseWriter, r *http.Request) {
 	handler.EnableEmployee(a.DB, w, r)
 }*/
 
-//Handlers for user data
+// Handlers for user data
 func (a *App) SignUp(w http.ResponseWriter, r *http.Request) {
 	handler.SignUp(a.DB, w, r)
 }
@@ -120,6 +131,43 @@ func (a *App) UpdateUser(w http.ResponseWriter, r *http.Request) {
 }
 func (a *App) DeleteUser(w http.ResponseWriter, r *http.Request) {
 	handler.DeleteUser(a.DB, w, r)
+}
+
+// Handlers for the bracket functions
+func (a *App) GetBracket(w http.ResponseWriter, r *http.Request) {
+	handler.GetBracket(a.DB, w, r)
+}
+func (a *App) GetUserBrackets(w http.ResponseWriter, r *http.Request) {
+	handler.GetUserBrackets(a.DB, w, r)
+}
+func (a *App) GetAllBrackets(w http.ResponseWriter, r *http.Request) {
+	handler.GetAllBrackets(a.DB, w, r)
+}
+func (a *App) CreateBracket(w http.ResponseWriter, r *http.Request) {
+	handler.CreateBracket(a.DB, w, r)
+}
+func (a *App) UpdateBracket(w http.ResponseWriter, r *http.Request) {
+	handler.UpdateBracket(a.DB, w, r)
+}
+func (a *App) DeleteBracket(w http.ResponseWriter, r *http.Request) {
+	handler.DeleteBracket(a.DB, w, r)
+}
+
+// Handlers for user functions
+func (a *App) AddTeam(w http.ResponseWriter, r *http.Request) {
+	handler.AddTeam(a.DB, w, r)
+}
+func (a *App) GetAllTeams(w http.ResponseWriter, r *http.Request) {
+	handler.GetAllTeams(a.DB, w, r)
+}
+func (a *App) GetTeam(w http.ResponseWriter, r *http.Request) {
+	handler.GetTeam(a.DB, w, r)
+}
+func (a *App) UpdateTeam(w http.ResponseWriter, r *http.Request) {
+	handler.AddTeam(a.DB, w, r)
+}
+func (a *App) DeleteTeam(w http.ResponseWriter, r *http.Request) {
+	handler.DeleteTeam(a.DB, w, r)
 }
 
 // Run the app on it's router

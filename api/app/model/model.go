@@ -25,6 +25,7 @@ type User struct {
 type Team struct {
 	gorm.Model
 	Name       string `json:"name"`
+	BracketID  string `json:"bracketid"`
 	Index      int    `json:"index"`
 	Round      int    `json:"round"`
 	Position   int    `json:"position"`
@@ -53,6 +54,6 @@ func (p *Employee) Enable() {
 
 // DBMigrate will create and migrate the tables, and then make the some relationships if necessary
 func DBMigrate(db *gorm.DB) *gorm.DB {
-	db.AutoMigrate(&User{})
+	db.AutoMigrate(&User{}, &Team{}, &Bracket{})
 	return db
 }
