@@ -47,9 +47,9 @@ func (a *App) setRouters() {
 	a.Get("/users/{username}", a.GetUser) // Might change from username to UUID as identifier
 	a.Put("/users/{username}", a.UpdateUser)
 	a.Delete("/users/{username}", a.DeleteUser)
+	a.Get("/users/brackets/{userid}", a.GetUserBrackets)
 	a.Post("/brackets", a.CreateBracket)
 	a.Get("/brackets", a.GetAllBrackets)
-	a.Get("/brackets/{userid}", a.GetUserBrackets)
 	a.Put("/brackets/{bracketid}", a.UpdateBracket)
 	a.Get("/brackets/{bracketid}", a.GetBracket)
 	a.Delete("/brackets/{bracketid}", a.DeleteBracket)

@@ -17,7 +17,7 @@ type User struct {
 	//Email   string `gorm:"unique" json:"email"`
 	Username string `gorm:"unique" json:"username"`
 	Password string `json:"password"`
-	UUID     string `gorm:"unique" json:"uuid"`
+	UUID     string `json:"uuid"`
 	//UUID   int `gorm:"unique" json:"uuid"`
 	//Status bool   `json:"status"`
 }

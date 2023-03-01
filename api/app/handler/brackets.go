@@ -14,7 +14,7 @@ import (
 // getBracketOr404 gets a bracket instance if exists, or respond the 404 error otherwise
 func getBracketOr404(db *gorm.DB, bracketID string, w http.ResponseWriter, r *http.Request) *model.Bracket {
 	bracket := model.Bracket{}
-	if err := db.First(&bracket, model.Bracket{BracketID: bracketID}).Error; err != nil {
+	if err := db.Preload("Teams").First(&bracket, model.Bracket{BracketID: bracketID}).Error; err != nil {
 		respondError(w, http.StatusNotFound, err.Error())
 		return nil
 	}
@@ -77,6 +77,10 @@ func CreateBracket(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 
 	bracket.Matches = int(math.Ceil(math.Log2(float64(bracket.Size))))
 	bracket.BracketID = uuid.New().String()
+	for i := 0; i < len(bracket.Teams); i++ {
+		bracket.Teams[i].BracketID = bracket.BracketID
+		bracket.Teams[i].Index = i
+	}
 
 	saveBracket(db, w, &bracket)
 }

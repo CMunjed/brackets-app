@@ -52,9 +52,7 @@ func GetTeam(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 // GetAllTeams returns all the teams in the bracket
 func GetAllTeams(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 	bracket := findBracket(db, w, r)
-	if bracket != nil {
-		respondJSON(w, http.StatusOK, bracket.Teams)
-	}
+	respondJSON(w, http.StatusOK, bracket.Teams)
 }
 
 // UpdateTeam edits a team within a bracket
@@ -101,8 +99,14 @@ func DeleteTeam(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 		firstPartition := bracket.Teams[:index]
 		if index+1 < len(bracket.Teams) {
 			secondPartition := bracket.Teams[index+1 : len(bracket.Teams)]
+
+			for i := 0; i < len(secondPartition); i++ {
+				secondPartition[i].Index--
+			}
+
 			firstPartition = append(firstPartition, secondPartition...)
 		}
+
 		bracket.Teams = firstPartition
 		saveBracket(db, w, bracket)
 	}
