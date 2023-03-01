@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"math"
 
 	"example.com/api/app"
 )
@@ -19,7 +18,7 @@ type Match struct {
 }
 
 func main() {
-	fmt.Print("Type a number of rounds: ")
+	/*fmt.Print("Type a number of rounds: ")
 	var rounds float64
 
 	fmt.Print("Type a number of rounds: ")
@@ -38,7 +37,7 @@ func main() {
 
 	for i := 0; i < r; i++ {
 		fmt.Println(matches[i].member1.name + " " + matches[i].member2.name)
-	}
+	}*/
 
 	fmt.Println("Hello!")
 	app := &app.App{}

@@ -53,14 +53,14 @@ func GetUserBrackets(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 	userBrackets := []model.Bracket{}
 	vars := mux.Vars(r)
 
-	db.Find(&userBrackets, vars["userid"])
+	db.Preload("Teams").Find(&userBrackets, vars["userid"])
 	respondJSON(w, http.StatusOK, userBrackets)
 }
 
 // GetAllBrackets returns all of the brackets in the database
 func GetAllBrackets(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 	brackets := []model.Bracket{}
-	db.Find(&brackets)
+	db.Preload("Teams").Find(&brackets)
 	respondJSON(w, http.StatusOK, brackets)
 }
 
