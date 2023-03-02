@@ -2,11 +2,16 @@
 
 ## Work Done in Sprint 2
 Front-End:
+During this sprint, we implemented many features necessary for user authentication on the front end, which will be used for bracket users. This was done to establish communication between the front-end and back-end and begin the process of integration. Adding functionality for cypress testing and user testing using Karma was done, despite many integration issues due to cypress, angular, and included packages such as the mat slide toggle having complications with each other.
 
 Back-End:
 During this sprint, we were able to figure out how to implement user authentication and basic bracket functionality. In regard to user authentication, we are able to handle sign-ups and logins, and store user profiles which will eventually be linked to the brackets they have created. In regard to brackets, we we added functionality to create, edit, store, and delete brackets, along with the teams within the brackets. The brackets will also have user IDs stored with them, allowing us to link users to their brackets in the future.
 
 ## Front-End Unit Tests
+create sign in component
+create and run web application
+authenticate the title of the application
+ensure proper positioning of elements in application
 
 ## Back-end Unit Tests
 
