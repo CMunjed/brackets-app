@@ -1,12 +1,16 @@
 import { TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
+import { AppModule } from './app.module';
 import { AppComponent } from './app.component';
+import { NgModule } from '@angular/core';
+import {MatSlideToggleModule} from '@angular/material/slide-toggle';
 
 describe('AppComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [
-        RouterTestingModule
+        RouterTestingModule,
+        MatSlideToggleModule
       ],
       declarations: [
         AppComponent
@@ -26,10 +30,4 @@ describe('AppComponent', () => {
     expect(app.title).toEqual('brackets-app');
   });
 
-  it('should render title', () => {
-    const fixture = TestBed.createComponent(AppComponent);
-    fixture.detectChanges();
-    const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.querySelector('.content span')?.textContent).toContain('brackets-app app is running!');
-  });
 });

@@ -1,4 +1,4 @@
-import { NgModule } from '@angular/core';
+import { NgModule, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 
 import {MatSlideToggleModule} from '@angular/material/slide-toggle';
@@ -21,7 +21,11 @@ import { AppComponent } from './app.component';
      
     
   ],
+  exports: [
+    MatSlideToggleModule
+  ],
   providers: [],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
+  schemas: [ CUSTOM_ELEMENTS_SCHEMA ]
 })
 export class AppModule { }
