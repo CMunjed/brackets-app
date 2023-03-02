@@ -1,7 +1,16 @@
 /* To learn more about this file see: https://angular.io/config/tsconfig. */
 {
+  "include": [
+    "src",
+    "node_modules/cypress"
+  ],
+  "exclude": [
+    //"cypress.config.ts"
+    "node_modules/cypress"
+  ],
   "compileOnSave": false,
   "compilerOptions": {
+    "isolatedModules": true, // added to keep test case from throwing error
     "baseUrl": "./",
     "outDir": "./dist/out-tsc",
     "forceConsistentCasingInFileNames": true,
@@ -24,6 +33,8 @@
       "dom"
     ]
   },
+  //"exclude": ["cypress/**/*"], // added to keep test case from throwing error
+
   "angularCompilerOptions": {
     "enableI18nLegacyMessageIdFormat": false,
     "strictInjectionParameters": true,
