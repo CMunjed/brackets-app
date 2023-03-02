@@ -34,6 +34,11 @@
       console.log("Image URL:  " + response.picture);
       console.log("Email: " + response.email);
 
+
+      this.http.post('http://localhost:4200/products.json', cred).subscribe((res) => {
+        console.log(res);
+
+      });
   
 }
 
