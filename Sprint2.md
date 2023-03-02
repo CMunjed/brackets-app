@@ -1,7 +1,7 @@
 # Sprint 2.md
 
 ## Video Link
-[Link to Video](Video: https://youtu.be/003O3YYKI4Y)
+[Link to Video](https://youtu.be/003O3YYKI4Y)
 
 ## Work Done in Sprint 2
 Front-End:
