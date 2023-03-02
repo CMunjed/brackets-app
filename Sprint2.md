@@ -1,5 +1,8 @@
 # Sprint 2.md
 
+## Video Link
+[Link to Video](Video: https://youtu.be/003O3YYKI4Y)
+
 ## Work Done in Sprint 2
 Front-End:
 During this sprint, we implemented many features necessary for user authentication on the front end, which will be used for bracket users. This was done to establish communication between the front-end and back-end and begin the process of integration. Adding functionality for cypress testing and user testing using Karma was done, despite many integration issues due to cypress, angular, and included packages such as the mat slide toggle having complications with each other.
