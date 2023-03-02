@@ -34,20 +34,13 @@ func (a *App) Initialize() {
 func (a *App) setRouters() {
 	// Routing for handling the projects
 
-	/*a.Get("/employees", a.GetAllEmployees)
-	a.Post("/employees", a.CreateEmployee)
-	a.Get("/employees/{name}", a.GetEmployee)
-	a.Put("/employees/{name}", a.UpdateEmployee)
-	a.Delete("/employees/{name}", a.DeleteEmployee)
-	a.Put("/employees/{name}/disable", a.DisableEmployee)
-	a.Put("/employees/{name}/enable", a.EnableEmployee)*/
 	a.Post("/users/signup", a.SignUp)
 	a.Put("/users/signin", a.SignIn) // Put operation because sessions
 	a.Get("/users", a.GetAllUsers)
 	a.Get("/users/{username}", a.GetUser) // Might change from username to UUID as identifier
 	a.Put("/users/{username}", a.UpdateUser)
 	a.Delete("/users/{username}", a.DeleteUser)
-	a.Get("/users/brackets/{userid}", a.GetUserBrackets)
+	a.Get("/users/{userid}/brackets", a.GetUserBrackets)
 	a.Post("/brackets", a.CreateBracket)
 	a.Get("/brackets", a.GetAllBrackets)
 	a.Put("/brackets/{bracketid}", a.UpdateBracket)
@@ -57,9 +50,8 @@ func (a *App) setRouters() {
 	a.Get("/brackets/{bracketid}/teams", a.GetAllTeams)
 	a.Get("/brackets/{bracketid}/teams/{index}", a.GetTeam)
 	a.Put("/brackets/{bracketid}/teams/{index}", a.UpdateTeam)
-	a.Delete("/brackets/{bracketid}/teams/{index}", a.DeleteBracket)
+	a.Delete("/brackets/{bracketid}/teams/{index}", a.DeleteTeam)
 
-	//Enable and disable are overkill, not necessary
 }
 
 // Wrap the router for GET method
@@ -83,35 +75,6 @@ func (a *App) Delete(path string, f func(w http.ResponseWriter, r *http.Request)
 }
 
 //Handlers to manage User Data
-
-// Handlers to manage Employee Data
-/*func (a *App) GetAllEmployees(w http.ResponseWriter, r *http.Request) {
-	handler.GetAllEmployees(a.DB, w, r)
-}
-
-func (a *App) CreateEmployee(w http.ResponseWriter, r *http.Request) {
-	handler.CreateEmployee(a.DB, w, r)
-}
-
-func (a *App) GetEmployee(w http.ResponseWriter, r *http.Request) {
-	handler.GetEmployee(a.DB, w, r)
-}
-
-func (a *App) UpdateEmployee(w http.ResponseWriter, r *http.Request) {
-	handler.UpdateEmployee(a.DB, w, r)
-}
-
-func (a *App) DeleteEmployee(w http.ResponseWriter, r *http.Request) {
-	handler.DeleteEmployee(a.DB, w, r)
-}
-
-func (a *App) DisableEmployee(w http.ResponseWriter, r *http.Request) {
-	handler.DisableEmployee(a.DB, w, r)
-}
-
-func (a *App) EnableEmployee(w http.ResponseWriter, r *http.Request) {
-	handler.EnableEmployee(a.DB, w, r)
-}*/
 
 // Handlers for user data
 func (a *App) SignUp(w http.ResponseWriter, r *http.Request) {
