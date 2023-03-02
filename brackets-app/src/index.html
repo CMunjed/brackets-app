@@ -15,19 +15,42 @@
   <app-root></app-root>
 </body>
 
-
+  <head>
 
   
 
-  <head>
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
 
-  <script src="https://apis.google.com/js/platform.js" async defer></script>
-  <meta name="google-signin-client_id" content="92722828266-71b7tc9h054scl4ere92bcc3ken8ker3.apps.googleusercontent.com">
-  </head>
-  <body>
-    
-    <div class="g-signin2"></div>
-  </body>
+  
+
+<script>
+  function onSignIn(cred) {
+
+    const response = decodeJWT(cred.credential);
+      console.log("Id: " + response.sub);
+      console.log('Full Name: ' + response.name);
+      console.log('Given Name: ' + response.given_name);
+      console.log('Family Name: ' + response.family_name);
+      console.log("Image URL:  " + response.picture);
+      console.log("Email: " + response.email);
+
+
+      this.http.post('http://localhost:4200/products.json', cred).subscribe((res) => {
+        console.log(res);
+
+      });
+  
+}
+
+function decodeJWT(data){
+  var tokens = data.split(".");
+  return JSON.parse(atob(tokens[1]))
+
+}
+
+</script>
+
+
 
 
 </html>
