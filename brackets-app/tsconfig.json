@@ -10,7 +10,7 @@
   ],
   "compileOnSave": false,
   "compilerOptions": {
-    "isolatedModules": true, // added to keep test case from throwing error
+    //"isolatedModules": true, // added to keep test case from throwing error
     "baseUrl": "./",
     "outDir": "./dist/out-tsc",
     "forceConsistentCasingInFileNames": true,
