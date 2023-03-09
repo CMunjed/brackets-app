@@ -25,7 +25,8 @@ ensure proper positioning of elements in application
  ```
  type User struct {
 	gorm.Model
-	Username string `gorm:"unique" json:"username"`
+	Email    string `gorm:"unique" json:"email"`
+  Username string `gorm:"unique" json:"username"`
 	Password string `json:"password"`
 	UUID     string `json:"uuid"`
     }
