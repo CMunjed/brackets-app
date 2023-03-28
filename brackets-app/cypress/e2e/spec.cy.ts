@@ -1,3 +1,5 @@
+/// <reference types="cypress" />
+
 describe('template spec', () => {
   // open web application on local host
   it('successfully loads', () => {
@@ -5,6 +7,6 @@ describe('template spec', () => {
   })
   // test click on sign in button
   it('passes click test 1', () => {
-    cy.contains('Sign in').click()
+    cy.contains('Add Teams').click()
   })
 })
