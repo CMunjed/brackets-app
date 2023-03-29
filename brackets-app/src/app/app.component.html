@@ -356,42 +356,54 @@
 </body>
 </html>
 
+
   <input type="hidden" #selection>
 
   <div class="card-container">
-    <button class="card card-small" (click)="selection.value = 'component'" tabindex="0">
-      <svg class="material-icons" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
-      <span>Add Teams</span>
-    </button>
+    <input 
+    type="text" 
+    placeholder="How many Teams" 
+    #roundsInput />
+  <button (click)="createBracket()">Add Teams</button> 
 
-    
-
- <img src="https://i.imgur.com/7p5S8Pm.png">
+  
+<!--
+  <div *ngIf="TeamsList" class="wrapper">
+    <div *ngFor="let team of TeamsList" class="team">
+      {{ team }}
+    </div>
+  </div>
+ -->
 
   <!-- ToggleButtons -->
   
   <mat-slide-toggle>Single-Elimination</mat-slide-toggle>
-  <mat-slide-toggle>Round-Robin</mat-slide-toggle>
   <mat-slide-toggle>Double-Elimination</mat-slide-toggle>
 
+
+
+
+
+
   <!-- Stats Table -->
+  <!--
   <table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
 
     
   
-    <!-- Position Column -->
+    
     <ng-container matColumnDef="position">
       <th mat-header-cell *matHeaderCellDef> No. </th>
       <td mat-cell *matCellDef="let element"> {{element.position}} </td>
     </ng-container>
   
-    <!-- Name Column -->
+    
     <ng-container matColumnDef="name">
       <th mat-header-cell *matHeaderCellDef> Name </th>
       <td mat-cell *matCellDef="let element"> {{element.name}} </td>
     </ng-container>
   
-    <!-- Weight Column -->
+   
     <ng-container matColumnDef="weight">
       <th mat-header-cell *matHeaderCellDef> Score </th>
       <td mat-cell *matCellDef="let element"> {{element.score}} </td>
@@ -402,6 +414,108 @@
     <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
     <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
   </table>
+  -->
+<div>
+
+  <button class="button button2" (click)="myFunction()" style="display: none" id="eN">{{ eTN }}</button> 
+  <div id="myDIV" style="display: none">
+
+    <select name="editName" id="editName">
+        <option *ngFor="let team of TeamsList" class="team">
+          {{ team }}
+        </option>
+    </select>
+    <a style="display:inline-block;">
+      <input 
+      type="text" 
+      placeholder="Change Team Name" 
+      #nameInput/>
+      <button (click)="setTeamName()" style="cursor: pointer;">Set Team Name</button>
+    </a>
+  </div>
+
+
+  <!---
+  <div class="dropdown-content">
+    <a style="display:inline-block;">
+      <input 
+      type="text" 
+      placeholder="Change Team Name" 
+      #nameInput/>
+      <button (click)="setTeamName(match.Member1)" style="cursor: pointer;">Set Team Name</button>
+    </a>
+  </div>
+  -->
+
+
+  <div style="display: flex">
+    <div class="brackets" *ngIf="BracketList" style="float: left;">
+      <div *ngFor="let Bracket of BracketList" class="Brack">
+        <div class="bracket-container">
+          <div class="round">
+            <ng-container *ngFor="let match of Bracket.MatchList; let i = index">
+              <div class="match-container">
+                <div class="match" [ngClass]="{ 'final': i == 0 }">
+                  <div class="team">
+  
+  
+  
+                    <div class="dropdown">
+                      <button class="buttonboxes button2" (click)="progressTeam(match.Member1)"> {{ match.Member1 }} </button> 
+                      <div class="dropdown-content">
+                        <option class="buttonboxes button2" (click)="progressTeam(match.Member1)"> Select {{ match.Member1 }} As Winner </option> 
+                      </div>
+                    </div>
+  
+                    
+                    <p>&nbsp; &nbsp; </p>
+  
+  
+  
+                    <span [ngStyle]="{ 'font-weight': match.Member1Wins > match.Member2Wins ? 'bold' : 'normal' }">
+                      ({{ match.Member1Wins }})
+                    </span>
+                  </div>
+                  <div class="team">
+                    <div class="dropdown">
+                      <button class="buttonboxes button2" (click)="progressTeam(match.Member2)"> {{ match.Member2 }} </button> 
+                      <div class="dropdown-content">
+                        <option class="buttonboxes button2" (click)="progressTeam(match.Member2)"> Select {{ match.Member2 }} As Winner </option> 
+  
+                      </div>
+                    </div>
+                    <p>&nbsp; &nbsp; </p>
+                    <span [ngStyle]="{ 'font-weight': match.Member2Wins > match.Member1Wins ? 'bold' : 'normal' }">
+                      ({{ match.Member2Wins }})
+                    </span>
+                  </div>
+                </div>
+              </div>
+              <div class="connector" *ngIf="(i+1) % 2 == 0"></div>
+            </ng-container>
+          </div>
+    </div>
+    </div>
+    </div>
+  
+    <div class="Brack" id="winner" style="display: none">
+      <div class="bracket-container">
+        <div class="round">
+            <div class="match-container">
+              <div class="match" style="display: block">
+                <div class="team" style="margin-top: 30%;">
+                  {{ Winner }}
+                </div>
+                <p style="text-align: center; font-size: 30px;">Winner</p>
+              </div>
+            </div>
+        </div>
+        </div>
+  </div>
+    </div>
+</div>
+
+
   
 
 

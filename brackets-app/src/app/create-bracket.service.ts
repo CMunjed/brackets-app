@@ -36,7 +36,7 @@ class Bracket {
 }
 
 export class CreateBracketService {
-  winner: string = "";
+  winner:string = "";
   currentBracket = 0;
   bl: Bracket[] = [];
   b = new Bracket(0);
@@ -70,19 +70,23 @@ export class CreateBracketService {
         }
       }
     }
+  }
 
-    for(let i = 0; i < this.b.TeamsList.length; i++){
-      if(this.b.TeamsList[i] == team){
-        this.b.TeamsList[i] = newName;
-      }
-    }
+  getWinner(){
+    return this.winner;
   }
 
 
-  createBracket() {
+  createBracket(Teams: number) {
     // simple check, title must be at least 1 char
-    this.b.Teams = this.b.TeamsList.length;
-    var Teams = this.b.Teams;
+    this.b.Teams = Teams;
+    console.log(Teams)
+    for (let i = 1; i <= Teams; i++) {
+      this.b.TeamsList.push("Team " + i.toString());
+    }
+    for (let i = 0; i < Teams; i++) {
+      console.log(this.b.TeamsList[i]);
+    }
 
     const shuffledTeams = this.shuffle(this.b.TeamsList);
   
@@ -146,10 +150,6 @@ export class CreateBracketService {
     }
   }
 
-  getWinner(){
-    return this.winner;
-  }
-
   createPairings(){
     for (let i = 0; i < this.b.TeamsList.length; i++) {
       this.b.MatchList.push(new Match(this.b.TeamsList[i], this.b.TeamsList[i+1],0,0));
@@ -162,12 +162,10 @@ export class CreateBracketService {
   }
 
   progressTeam(team: string){
-
     if(!this.bl[this.bl.length - 1].TeamsList.includes("")){
       this.winner = team;
       return;
     }
-
 
     if(this.bl[this.currentBracket + 1].TeamsList.includes(team)){
       if(!this.bl[this.currentBracket + 1].TeamsList.includes(""))
@@ -192,7 +190,9 @@ export class CreateBracketService {
     }
     this.currentBracket++;
 
+    if(this.currentBracket == this.b.Rounds){
 
+    }
 
     for(let i = 0; i < this.bl[this.currentBracket + 1].TeamsList.length; i++){
       if(this.bl[this.currentBracket + 1].TeamsList[i] == "")
@@ -235,13 +235,6 @@ export class CreateBracketService {
       [array[i], array[j]] = [array[j], array[i]];
     }
     return array;
-  }
-
-  addTeam(team: string) {
-    if(this.b.TeamsList.includes(team)){
-      return;
-    }
-    this.b.TeamsList.push(team);
   }
 
 }
