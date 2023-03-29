@@ -33,6 +33,10 @@ func SignUp(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 	// Salt and hash the password using the bcrypt algorithm
 	// The second argument is the cost of hashing, which we arbitrarily set as 8 (this value can be more or less, depending on the computing power you wish to utilize)
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(user.Password), 8)
+	if err != nil {
+		respondError(w, http.StatusInternalServerError, err.Error()) // The above line replaced with our respondError function created in common.go
+		return
+	}
 
 	user.Password = string(hashedPassword) // Is changing the user object's password to the hashed version the best way to pass the data to the db?
 
@@ -146,7 +150,13 @@ func UpdateEmail(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 	}
 	defer r.Body.Close()
 
-	user.Email = update.Email
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(user.Password), 8)
+	if err != nil {
+		respondError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	user.Password = string(hashedPassword)
 
 	if err := db.Save(&user).Error; err != nil {
 		respondError(w, http.StatusInternalServerError, err.Error())
