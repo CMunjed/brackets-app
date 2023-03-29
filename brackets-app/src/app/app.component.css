@@ -1,0 +1,118 @@
+/* Use a modern font for a futuristic feel */
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@500&display=swap');
+
+/* Use CSS custom properties for easy color management */
+:root {
+  --primary-color: #00c9ff;
+  --secondary-color: #1c1c1c;
+}
+
+/* Make the bracket container fill the entire screen */
+.bracket-container {
+  max-width: 215px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  background-color: var(--secondary-color);
+}
+
+.buttonboxes {
+  font-size: 20px;
+  min-height: 50px;
+  max-height: fit-content;
+  min-width: 100px;
+  max-width: fit-content;
+  border-radius: 20px;
+  background-color: transparent;
+  outline: none;
+  outline-color: none;
+  outline-style: none;
+  
+}
+
+/* Give the rounds a more sleek and modern look */
+.round {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border-radius: 20px;
+  box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.4);
+  
+  background-color: white;
+  transition: all 0.3s ease;
+  transform: scale(0.5);
+}
+
+.round:hover {
+  transform: scale(0.55);
+}
+
+/* Add a futuristic gradient background to the team boxes */
+.team {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  font-weight: 600;
+  text-align: center;
+  width: 200px;
+  height: 60px;
+  border-radius: 30px;
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+  background: linear-gradient(to bottom right, var(--primary-color), #008cff);
+  transition: all 0.3s ease;
+}
+
+.team:hover {
+  background: linear-gradient(to bottom right, #ff7300, #0088ff);
+  transform: translateY(-5px);
+  box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.3);
+}
+
+/* Make the connector more interesting with an animated pulse effect */
+.connector {
+  height: 50px;
+  width: 50px;
+  border-radius: 50%;
+  border: 2px solid var(--primary-color);
+  margin: 0 auto;
+  animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(0.8);
+    opacity: 0.7;
+  }
+
+  50% {
+    transform: scale(1);
+    opacity: 1;
+  }
+
+  100% {
+    transform: scale(0.8);
+    opacity: 0.7;
+  }
+}
+
+/* Add some 3D depth to the final connector */
+.final .connector {
+  border: none;
+  background-color: var(--primary-color);
+  box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.3);
+  transform: rotate(45deg);
+}
+
+
+.match {
+  position: relative;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  height: 150px;
+}
