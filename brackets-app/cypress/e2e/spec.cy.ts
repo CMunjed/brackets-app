@@ -26,4 +26,5 @@ describe('template spec', () => {
     cy.visit('http://localhost:4200/')
     cy.contains('Sign in with Google').click()
   })
+  
 })
