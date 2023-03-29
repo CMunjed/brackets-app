@@ -6,10 +6,9 @@ import (
 
 type User struct {
 	gorm.Model
-	Email    string `gorm:"unique" json:"email"`
+	Email    string `json:"email"`
 	Username string `gorm:"unique" json:"username"`
 	Password string `json:"password"`
-	UUID     string `json:"uuid"`
 	//UUID   int `gorm:"unique" json:"uuid"`
 	//Status bool   `json:"status"`
 }
@@ -31,6 +30,7 @@ type Bracket struct {
 	UserID    string `json:"userid"`
 	Size      int    `json:"size"`
 	Matches   int    `json:"matches"`
+	Type      int    `json:"type"`
 	Teams     []Team `json:"teams"`
 }
 
