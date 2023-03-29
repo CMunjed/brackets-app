@@ -27,6 +27,8 @@
   function onSignIn(cred) {
 
     const response = decodeJWT(cred.credential);
+
+      console.log(response);
       console.log("Id: " + response.sub);
       console.log('Full Name: ' + response.name);
       console.log('Given Name: ' + response.given_name);
@@ -35,11 +37,11 @@
       console.log("Email: " + response.email);
 
 
-      this.http.post('http://localhost:4200/products.json', cred).subscribe((res) => {
+      this.http.post('http://localhost:3000/users/googlesignup', response).subscribe((res) => {
         console.log(res);
 
       });
-  
+
 }
 
 function decodeJWT(data){

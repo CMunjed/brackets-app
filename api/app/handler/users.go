@@ -1,10 +1,13 @@
 package handler
 
 import (
+	"bytes"
 	"encoding/json"
 	"net/http"
+	"strings"
 
 	"example.com/api/app/model"
+	"github.com/google/uuid"
 	"github.com/gorilla/mux"
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
@@ -165,4 +168,65 @@ func DeleteUser(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	respondJSON(w, http.StatusNoContent, nil)
+}
+
+func GoogleSignUp(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
+	//vars := mux.Vars(r)
+
+	type GoogleUser struct {
+		//gorm.Model
+		Aud    string `json:"aud"`
+		Azp    string `json:"azp"`
+		Email  string `json:"email"`
+		Emailv bool   `json:"email_verified"`
+		Exp    int    `json:"exp"`
+		Gname  string `json:"given_name"`
+		//Fname	 string `json:"family_name"`
+		Iat    int    `json:"iat"`
+		Iss    string `json:"iss"`
+		Jti    string `json:"jti"`
+		Name   string `json:"name"`
+		Nbf    int    `json:"nbf"`
+		Imgurl string `json:"picture"`
+		Id     string `json:"sub"`
+	}
+
+	gdata := GoogleUser{}
+
+	decoder := json.NewDecoder(r.Body)
+	/*var data struct {
+	    Token string json:"token"
+	}*/
+
+	err := decoder.Decode(&gdata)
+	if err != nil {
+		respondError(w, http.StatusBadRequest, err.Error())
+		return
+	}
+
+	user := &model.User{
+		Email:    gdata.Email,
+		Username: gdata.Email[:strings.Index(gdata.Email, "@")],
+		Password: uuid.New().String(),
+	}
+
+	/*email := gdata.Email
+	username := gdata.Email[:strings.Index(gdata.Email, "@")-1]
+	password := uuid.New().String()*/
+
+	jsonData, err := json.Marshal(user)
+	if err != nil {
+		respondError(w, http.StatusInternalServerError, err.Error())
+	}
+
+	requestBody := bytes.NewBuffer(jsonData)
+
+	newRequest, err := http.NewRequest("POST", "/users/signup", requestBody)
+	if err != nil {
+		respondError(w, http.StatusInternalServerError, err.Error())
+	}
+
+	SignUp(db, w, newRequest)
+
+	//respondJSON(w, http.StatusOK, user)
 }
