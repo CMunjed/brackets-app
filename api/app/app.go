@@ -51,6 +51,7 @@ func (a *App) setRouters() {
 	a.Get("/users/{username}/{bracketid}/teams/{index}", a.GetTeam)
 	a.Put("/users/{username}/{bracketid}/teams/{index}", a.UpdateTeam)
 	a.Delete("/users/{username}/{bracketid}/teams/{index}", a.DeleteTeam)
+	a.Post("/users/googlesignup", a.GoogleSignUp)
 
 }
 
@@ -74,8 +75,6 @@ func (a *App) Delete(path string, f func(w http.ResponseWriter, r *http.Request)
 	a.Router.HandleFunc(path, f).Methods("DELETE")
 }
 
-//Handlers to manage User Data
-
 // Handlers for user data
 func (a *App) SignUp(w http.ResponseWriter, r *http.Request) {
 	handler.SignUp(a.DB, w, r)
@@ -95,6 +94,15 @@ func (a *App) UpdateUser(w http.ResponseWriter, r *http.Request) {
 func (a *App) DeleteUser(w http.ResponseWriter, r *http.Request) {
 	handler.DeleteUser(a.DB, w, r)
 }
+
+// Handlers for Google sign-in
+func (a *App) GoogleSignUp(w http.ResponseWriter, r *http.Request) {
+	handler.GoogleSignUp(a.DB, w, r)
+}
+
+/*func (a *App) SignUp(w http.ResponseWriter, r *http.Request) {
+	handler.SignUp(a.DB, w, r)
+}*/
 
 // Handlers for the bracket functions
 func (a *App) GetBracket(w http.ResponseWriter, r *http.Request) {
