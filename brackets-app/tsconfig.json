@@ -2,7 +2,8 @@
 {
   "include": [
     "src",
-    "node_modules/cypress"
+    "node_modules/cypress",
+    "jasmine"
   ],
   "exclude": [
     //"cypress.config.ts"
