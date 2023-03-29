@@ -55,7 +55,7 @@ func TestSignUp(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	app.SignUp(w, r)
+	app.Router.ServeHTTP(w, r)
 	assert.Equal(t, http.StatusCreated, w.Code)
 }
 
@@ -69,11 +69,11 @@ func TestSignIn(t *testing.T) {
 
 	requestBody := bytes.NewBuffer(jsonData)
 
-	r, err := http.NewRequest("POST", "/users/signin", requestBody)
+	r, err := http.NewRequest("PUT", "/users/signin", requestBody)
 	if err != nil {
 		t.Fatal(err)
 	}
-	app.SignIn(w, r)
+	app.Router.ServeHTTP(w, r)
 	assert.Equal(t, http.StatusOK, w.Code)
 }
 
@@ -86,7 +86,7 @@ func TestGetUser(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	app.GetUser(w, r)
+	app.Router.ServeHTTP(w, r)
 
 	response := decodeUser(w, t)
 
@@ -97,7 +97,7 @@ func TestGetUser(t *testing.T) {
 func TestUpdateUser(t *testing.T) {
 	app, w := setup()
 
-	user_update := test_user
+	user_update := model.User{}
 	user_update.Password = "newpassword"
 
 	jsonData, err := json.Marshal(user_update)
@@ -113,7 +113,7 @@ func TestUpdateUser(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	app.UpdateUser(w, r)
+	app.Router.ServeHTTP(w, r)
 
 	response := decodeUser(w, t)
 
@@ -137,9 +137,9 @@ func TestDeleteUser(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	app.SignUp(w, r)
+	app.Router.ServeHTTP(w, r)
 
-	assert.Equal(t, http.StatusOK, w.Code)
+	assert.Equal(t, http.StatusCreated, w.Code)
 
 	//Delete the dummy user
 	w = httptest.NewRecorder()
@@ -149,7 +149,7 @@ func TestDeleteUser(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	app.DeleteUser(w, r)
+	app.Router.ServeHTTP(w, r)
 
 	assert.Equal(t, http.StatusNoContent, w.Code)
 }
@@ -161,7 +161,7 @@ func TestGetAllUsers(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	app.GetAllUsers(w, r)
+	app.Router.ServeHTTP(w, r)
 
 	assert.Equal(t, http.StatusOK, w.Code)
 }
