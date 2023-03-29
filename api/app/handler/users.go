@@ -5,7 +5,6 @@ import (
 	"net/http"
 
 	"example.com/api/app/model"
-	"github.com/google/uuid"
 	"github.com/gorilla/mux"
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
@@ -33,8 +32,6 @@ func SignUp(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(user.Password), 8)
 
 	user.Password = string(hashedPassword) // Is changing the user object's password to the hashed version the best way to pass the data to the db?
-
-	user.UUID = uuid.New().String() // This creates a unique UUID tied to the user account, allowing for changes to usernames and emails without loosing user data
 
 	// These lines changed from tutorial, insert new user into database
 	if err := db.Save(&user).Error; err != nil {

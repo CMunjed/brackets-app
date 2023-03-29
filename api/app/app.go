@@ -40,17 +40,17 @@ func (a *App) setRouters() {
 	a.Get("/users/{username}", a.GetUser) // Might change from username to UUID as identifier
 	a.Put("/users/{username}", a.UpdateUser)
 	a.Delete("/users/{username}", a.DeleteUser)
-	a.Get("/users/{userid}/brackets", a.GetUserBrackets)
-	a.Post("/brackets", a.CreateBracket)
+	a.Get("/users/{username}/brackets", a.GetUserBrackets)
+	a.Post("/users/{username}/brackets", a.CreateBracket)
 	a.Get("/brackets", a.GetAllBrackets)
-	a.Put("/brackets/{bracketid}", a.UpdateBracket)
-	a.Get("/brackets/{bracketid}", a.GetBracket)
-	a.Delete("/brackets/{bracketid}", a.DeleteBracket)
-	a.Post("/brackets/{bracketid}/teams", a.AddTeam)
-	a.Get("/brackets/{bracketid}/teams", a.GetAllTeams)
-	a.Get("/brackets/{bracketid}/teams/{index}", a.GetTeam)
-	a.Put("/brackets/{bracketid}/teams/{index}", a.UpdateTeam)
-	a.Delete("/brackets/{bracketid}/teams/{index}", a.DeleteTeam)
+	a.Put("/users/{username}/{bracketid}", a.UpdateBracket)
+	a.Get("/users/{username}/{bracketid}", a.GetBracket)
+	a.Delete("/users/{username}/{bracketid}", a.DeleteBracket)
+	a.Post("/users/{username}/{bracketid}/teams", a.AddTeam)
+	a.Get("/users/{username}/{bracketid}/teams", a.GetAllTeams)
+	a.Get("/users/{username}/{bracketid}/teams/{index}", a.GetTeam)
+	a.Put("/users/{username}/{bracketid}/teams/{index}", a.UpdateTeam)
+	a.Delete("/users/{username}/{bracketid}/teams/{index}", a.DeleteTeam)
 
 }
 
