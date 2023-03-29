@@ -92,7 +92,8 @@ func getUserOr404(db *gorm.DB, username string, w http.ResponseWriter, r *http.R
 	return &user
 }
 
-func UpdateUser(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
+// This function updates the password for the user
+func UpdatePassword(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 
 	username := vars["username"]
@@ -101,12 +102,48 @@ func UpdateUser(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	update := model.User{}
 	decoder := json.NewDecoder(r.Body)
-	if err := decoder.Decode(&user); err != nil {
+	if err := decoder.Decode(&update); err != nil {
 		respondError(w, http.StatusBadRequest, err.Error())
 		return
 	}
 	defer r.Body.Close()
+
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(update.Password), 8)
+	if err != nil {
+		respondError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	user.Password = string(hashedPassword)
+
+	if err := db.Save(&user).Error; err != nil {
+		respondError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+	respondJSON(w, http.StatusOK, user)
+}
+
+// This function updates the email for the user
+func UpdateEmail(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+
+	username := vars["username"]
+	user := getUserOr404(db, username, w, r)
+	if user == nil {
+		return
+	}
+
+	update := model.User{}
+	decoder := json.NewDecoder(r.Body)
+	if err := decoder.Decode(&update); err != nil {
+		respondError(w, http.StatusBadRequest, err.Error())
+		return
+	}
+	defer r.Body.Close()
+
+	user.Email = update.Email
 
 	if err := db.Save(&user).Error; err != nil {
 		respondError(w, http.StatusInternalServerError, err.Error())
