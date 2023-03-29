@@ -339,14 +339,22 @@
  
 
 
-  <!-- Start Prompt -->
-  <h2>Get Started</h2>
-  <p>Enter Your Information below</p>
-
-  
-  <!-- Next Steps -->
-  <h2>Next Steps</h2>
-  <p>Hurry up and get your stuff in there!</p>
+  <!-- interactive title element -->
+  <!DOCTYPE html>
+<html>
+<head>
+	<title>Interactive Title</title>
+</head>
+<body>
+	<h1><span id="myTitle" contentEditable>Insert Bracket Name</span></h1>
+	<script>
+		function changeTitle() {
+			var newTitle = document.getElementById("titleInput").value;
+			document.getElementById("myTitle").innerHTML = newTitle;
+		}
+	</script>
+</body>
+</html>
 
   <input type="hidden" #selection>
 
