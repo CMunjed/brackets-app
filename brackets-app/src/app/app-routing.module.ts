@@ -6,16 +6,7 @@ import {MatSlideToggleModule} from '@angular/material/slide-toggle';
 
 const routes: Routes = [
 
-  {
-    path: '',
-    component: AppComponent
-  },
 
-
-  {
-    path: 'signin',
-    component: SignInComponent
-  } 
 ];
 
 @NgModule({
