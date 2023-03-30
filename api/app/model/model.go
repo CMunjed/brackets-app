@@ -1,16 +1,36 @@
 package model
 
 import (
+	//"github.com/google/uuid"
 	"gorm.io/gorm"
 )
 
 type User struct {
 	gorm.Model
-	Email    string `json:"email"`
-	Username string `gorm:"unique" json:"username"`
+	Email    string `gorm:"unique" json:"email"`
+	Username string `json:"username"`
 	Password string `json:"password"`
-	//UUID   int `gorm:"unique" json:"uuid"`
+	UserID   string `gorm:"unique" json:"userid"`
 	//Status bool   `json:"status"`
+}
+
+type GoogleUser struct {
+	//Not a gorm model bc this won't be saved in DB
+	//gorm.Model
+	Aud    string `json:"aud"`
+	Azp    string `json:"azp"`
+	Email  string `json:"email"`
+	Emailv bool   `json:"email_verified"`
+	Exp    int    `json:"exp"`
+	Gname  string `json:"given_name"`
+	//Fname	 string `json:"family_name"`
+	Iat    int    `json:"iat"`
+	Iss    string `json:"iss"`
+	Jti    string `json:"jti"`
+	Name   string `json:"name"`
+	Nbf    int    `json:"nbf"`
+	Imgurl string `json:"picture"`
+	Id     string `json:"sub"`
 }
 
 type Team struct {
@@ -27,7 +47,7 @@ type Bracket struct {
 	gorm.Model
 	Name      string `json:"name"`
 	BracketID string `gorm:"unique" json:"bracketid"`
-	Username  string `json:"username"`
+	UserID    string `json:"userid"`
 	Size      int    `json:"size"`
 	Matches   int    `json:"matches"`
 	Type      int    `json:"type"`
