@@ -37,20 +37,20 @@ func (a *App) setRouters() {
 	a.Post("/users/signup", a.SignUp)
 	a.Put("/users/signin", a.SignIn) // Put operation because sessions
 	a.Get("/users", a.GetAllUsers)
-	a.Get("/users/{username}", a.GetUser) // Might change from username to UUID as identifier
-	a.Put("/users/{username}", a.UpdateUser)
-	a.Delete("/users/{username}", a.DeleteUser)
-	a.Get("/users/{username}/brackets", a.GetUserBrackets)
-	a.Post("/users/{username}/brackets", a.CreateBracket)
+	a.Get("/users/{userid}", a.GetUser) // Changed from username to UUID as identifier
+	a.Put("/users/{userid}", a.UpdateUser)
+	a.Delete("/users/{userid}", a.DeleteUser)
+	a.Get("/users/{userid}/brackets", a.GetUserBrackets)
+	a.Post("/users/{userid}/brackets", a.CreateBracket)
 	a.Get("/brackets", a.GetAllBrackets)
-	a.Put("/users/{username}/{bracketid}", a.UpdateBracket)
-	a.Get("/users/{username}/{bracketid}", a.GetBracket)
-	a.Delete("/users/{username}/{bracketid}", a.DeleteBracket)
-	a.Post("/users/{username}/{bracketid}/teams", a.AddTeam)
-	a.Get("/users/{username}/{bracketid}/teams", a.GetAllTeams)
-	a.Get("/users/{username}/{bracketid}/teams/{index}", a.GetTeam)
-	a.Put("/users/{username}/{bracketid}/teams/{index}", a.UpdateTeam)
-	a.Delete("/users/{username}/{bracketid}/teams/{index}", a.DeleteTeam)
+	a.Put("/users/{userid}/{bracketid}", a.UpdateBracket)
+	a.Get("/users/{userid}/{bracketid}", a.GetBracket)
+	a.Delete("/users/{userid}/{bracketid}", a.DeleteBracket)
+	a.Post("/users/{userid}/{bracketid}/teams", a.AddTeam)
+	a.Get("/users/{userid}/{bracketid}/teams", a.GetAllTeams)
+	a.Get("/users/{userid}/{bracketid}/teams/{index}", a.GetTeam)
+	a.Put("/users/{userid}/{bracketid}/teams/{index}", a.UpdateTeam)
+	a.Delete("/users/{userid}/{bracketid}/teams/{index}", a.DeleteTeam)
 	a.Post("/users/googlesignup", a.GoogleSignUp)
 	a.Put("/users/googlesignin", a.GoogleSignIn)
 }
@@ -87,9 +87,6 @@ func (a *App) GetAllUsers(w http.ResponseWriter, r *http.Request) {
 }
 func (a *App) GetUser(w http.ResponseWriter, r *http.Request) {
 	handler.GetUser(a.DB, w, r)
-}
-func (a *App) UpdatePassword(w http.ResponseWriter, r *http.Request) {
-	handler.UpdatePassword(a.DB, w, r)
 }
 func (a *App) UpdateUser(w http.ResponseWriter, r *http.Request) {
 	handler.UpdateUser(a.DB, w, r)

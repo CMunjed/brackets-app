@@ -39,6 +39,7 @@ func SignUp(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 	}
 
 	user.Password = string(hashedPassword) // Is changing the user object's password to the hashed version the best way to pass the data to the db?
+	user.UserID = uuid.New().String()
 
 	// These lines changed from tutorial, insert new user into database
 	if err := db.Save(&user).Error; err != nil {
@@ -61,10 +62,9 @@ func SignIn(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	//Get first user from database matching username
-	vars := mux.Vars(r)
-	username := vars["username"]
-	storedUser := getUserOr404(db, username, w, r)
+	//Get first user from database matching username (changed to email)
+	//storedUser := getUserOr404(db, username, w, r)
+	storedUser := getUserFromEmailOr404(db, user.Email, w, r)
 	if storedUser == nil {
 		//respondError(w, http.StatusInternalServerError, err.Error())
 		//Error called in getUserOr404 helper function I think
@@ -82,68 +82,34 @@ func SignIn(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 func GetUser(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 
-	username := vars["username"]
-	user := getUserOr404(db, username, w, r)
+	userid := vars["userid"]
+	user := getUserOr404(db, userid, w, r)
 	if user == nil {
 		return
 	}
 	respondJSON(w, http.StatusOK, user)
 }
 
-func getUserOr404(db *gorm.DB, username string, w http.ResponseWriter, r *http.Request) *model.User {
+func getUserOr404(db *gorm.DB, userid string, w http.ResponseWriter, r *http.Request) *model.User {
 	user := model.User{}
-	if err := db.First(&user, model.User{Username: username}).Error; err != nil {
+	if err := db.First(&user, model.User{UserID: userid}).Error; err != nil {
 		respondError(w, http.StatusNotFound, err.Error())
 		return nil
 	}
 	return &user
 }
 
-// This function updates the password for the user
-func UpdatePassword(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-
-	username := vars["username"]
-	user := getUserOr404(db, username, w, r)
-	if user == nil {
-		return
-	}
-
-	update := model.User{}
-	decoder := json.NewDecoder(r.Body)
-	if err := decoder.Decode(&update); err != nil {
-		respondError(w, http.StatusBadRequest, err.Error())
-		return
-	}
-	defer r.Body.Close()
-
-	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(update.Password), 8)
-	if err != nil {
-		respondError(w, http.StatusInternalServerError, err.Error())
-		return
-	}
-
-	user.Password = string(hashedPassword)
-
-	if err := db.Save(&user).Error; err != nil {
-		respondError(w, http.StatusInternalServerError, err.Error())
-		return
-	}
-	respondJSON(w, http.StatusOK, user)
-}
-
 func UpdateUser(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 
-	username := vars["username"]
-	user := getUserOr404(db, username, w, r)
+	userid := vars["userid"]
+	user := getUserOr404(db, userid, w, r)
 	if user == nil {
 		return
 	}
 
-	update := model.User{}
 	decoder := json.NewDecoder(r.Body)
-	if err := decoder.Decode(&update); err != nil {
+	if err := decoder.Decode(&user); err != nil {
 		respondError(w, http.StatusBadRequest, err.Error())
 		return
 	}
@@ -167,8 +133,8 @@ func UpdateUser(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 func DeleteUser(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 
-	username := vars["username"]
-	user := getUserOr404(db, username, w, r)
+	userid := vars["userid"]
+	user := getUserOr404(db, userid, w, r)
 	if user == nil {
 		return
 	}
@@ -196,6 +162,7 @@ func GoogleSignUp(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 		Email:    gdata.Email,
 		Username: gdata.Email[:strings.Index(gdata.Email, "@")],
 		Password: uuid.New().String(), //Generates a random UUID as a password, since the user will never log into this account without google
+		//UserID:   uuid.New().String(),
 	}
 
 	/*email := gdata.Email
@@ -221,6 +188,7 @@ func GoogleSignUp(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 
 func GoogleSignIn(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 
+	//Another consideration is just storing the google data as a user
 	gdata := model.GoogleUser{}
 
 	decoder := json.NewDecoder(r.Body)
@@ -231,12 +199,23 @@ func GoogleSignIn(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	username := gdata.Email[:strings.Index(gdata.Email, "@")]
-	storedUser := getUserOr404(db, username, w, r)
+	//username := gdata.Email[:strings.Index(gdata.Email, "@")]
+	email := gdata.Email
+	storedUser := getUserFromEmailOr404(db, email, w, r)
 	if storedUser == nil {
 		//respondError(w, http.StatusInternalServerError, err.Error())
 		//Error called in getUserOr404 helper function I think
 		return
 	}
 
+	respondJSON(w, http.StatusOK, nil)
+}
+
+func getUserFromEmailOr404(db *gorm.DB, email string, w http.ResponseWriter, r *http.Request) *model.User {
+	user := model.User{}
+	if err := db.First(&user, model.User{Email: email}).Error; err != nil {
+		respondError(w, http.StatusNotFound, err.Error())
+		return nil
+	}
+	return &user
 }

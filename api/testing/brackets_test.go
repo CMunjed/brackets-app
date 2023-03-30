@@ -17,11 +17,11 @@ var (
 	Test_bracket_id = "59d8ef98-b83b-4a49-a069-cbd686d89736"
 
 	test_bracket = model.Bracket{
-		Name:     "Test_Bracket",
-		Username: "testuser",
-		Size:     16,
-		Type:     0,
-		Teams:    test_bracket_teams,
+		Name:   "Test_Bracket",
+		UserID: "testuser",
+		Size:   16,
+		Type:   0,
+		Teams:  test_bracket_teams,
 	}
 )
 
@@ -128,11 +128,11 @@ func TestUpdateBracket(t *testing.T) {
 
 func TestDeleteBracket(t *testing.T) {
 	dummy_bracket := model.Bracket{
-		Name:     "YOU CAN'T SEE THIS!!!",
-		Size:     0,
-		Type:     0,
-		Username: "testuser",
-		Teams:    []model.Team{},
+		Name:   "YOU CAN'T SEE THIS!!!",
+		Size:   0,
+		Type:   0,
+		UserID: "testuser",
+		Teams:  []model.Team{},
 	}
 
 	jsonData, err := json.Marshal(dummy_bracket)

@@ -1,15 +1,16 @@
 package model
 
 import (
+	//"github.com/google/uuid"
 	"gorm.io/gorm"
 )
 
 type User struct {
 	gorm.Model
-	Email    string `json:"email"`
-	Username string `gorm:"unique" json:"username"`
+	Email    string `gorm:"unique" json:"email"`
+	Username string `json:"username"`
 	Password string `json:"password"`
-	//UUID   int `gorm:"unique" json:"uuid"`
+	UserID   string `gorm:"unique" json:"userid"`
 	//Status bool   `json:"status"`
 }
 
@@ -46,7 +47,7 @@ type Bracket struct {
 	gorm.Model
 	Name      string `json:"name"`
 	BracketID string `gorm:"unique" json:"bracketid"`
-	Username  string `json:"username"`
+	UserID    string `json:"userid"`
 	Size      int    `json:"size"`
 	Matches   int    `json:"matches"`
 	Type      int    `json:"type"`
