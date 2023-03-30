@@ -1,7 +1,7 @@
 # Sprint 3.md
 
 ## Video Link
-[Link to Video]
+[Link to Video](https://youtu.be/003O3YYKI4Y)
 
 ## Work Done in Sprint 3
 Front End:
