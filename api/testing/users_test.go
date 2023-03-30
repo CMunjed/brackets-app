@@ -94,10 +94,10 @@ func TestGetUser(t *testing.T) {
 	assert.Equal(t, test_user.Username, response.Username)
 }
 
-func TestUpdateUser(t *testing.T) {
+func TestUpdatePassword(t *testing.T) {
 	app, w := setup()
 
-	user_update := model.User{}
+	user_update := test_user
 	user_update.Password = "newpassword"
 
 	jsonData, err := json.Marshal(user_update)
@@ -119,7 +119,52 @@ func TestUpdateUser(t *testing.T) {
 
 	assert.Equal(t, http.StatusOK, w.Code)
 	assert.Equal(t, test_user.Username, response.Username)
-	assert.Equal(t, user_update.Password, response.Password)
+
+	url = "/users/signin"
+
+	jsonData, err = json.Marshal(user_update)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	requestBody = bytes.NewBuffer(jsonData)
+
+	r, err = http.NewRequest("PUT", url, requestBody)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	w = httptest.NewRecorder()
+	app.Router.ServeHTTP(w, r)
+
+	assert.Equal(t, http.StatusOK, w.Code)
+}
+
+func TestUpdateEmail(t *testing.T) {
+	app, w := setup()
+
+	user_update := model.User{}
+	user_update.Email = "newemail@example.com"
+
+	jsonData, err := json.Marshal(user_update)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	requestBody := bytes.NewBuffer(jsonData)
+	url := "/users/" + test_user.Username
+
+	r, err := http.NewRequest("PUT", url, requestBody)
+	if err != nil {
+		t.Fatal(err)
+	}
+	app.Router.ServeHTTP(w, r)
+
+	response := decodeUser(w, t)
+
+	assert.Equal(t, http.StatusOK, w.Code)
+	assert.Equal(t, test_user.Username, response.Username)
+	assert.Equal(t, user_update.Email, response.Email)
 }
 
 func TestDeleteUser(t *testing.T) {

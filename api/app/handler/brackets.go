@@ -53,7 +53,7 @@ func GetUserBrackets(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 	userBrackets := []model.Bracket{}
 	vars := mux.Vars(r)
 
-	db.Preload("Teams").Find(&userBrackets, vars["userid"])
+	db.Preload("Teams").Find(&userBrackets, vars["username"])
 	respondJSON(w, http.StatusOK, userBrackets)
 }
 

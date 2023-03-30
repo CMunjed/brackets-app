@@ -14,129 +14,14 @@ import (
 )
 
 var (
-	Test_bracket_id = "77416fe0-c7f9-417a-af9e-8680064d2aa1"
-
-	test_bracket_teams = []model.Team{
-		{
-			Name:       "Team1",
-			Index:      0,
-			Round:      0,
-			Position:   1,
-			Eliminated: false,
-		},
-		{
-			Name:       "Team2",
-			Index:      1,
-			Round:      0,
-			Position:   2,
-			Eliminated: false,
-		},
-		{
-			Name:       "Team3",
-			Index:      2,
-			Round:      0,
-			Position:   3,
-			Eliminated: false,
-		},
-		{
-			Name:       "Team4",
-			Index:      3,
-			Round:      0,
-			Position:   4,
-			Eliminated: false,
-		},
-		{
-			Name:       "Team5",
-			Index:      4,
-			Round:      0,
-			Position:   5,
-			Eliminated: false,
-		},
-		{
-			Name:       "Team6",
-			Index:      5,
-			Round:      0,
-			Position:   6,
-			Eliminated: false,
-		},
-		{
-			Name:       "Team7",
-			Index:      6,
-			Round:      0,
-			Position:   7,
-			Eliminated: false,
-		},
-		{
-			Name:       "Team8",
-			Index:      8,
-			Round:      0,
-			Position:   8,
-			Eliminated: false,
-		},
-		{
-			Name:       "Team9",
-			Index:      8,
-			Round:      0,
-			Position:   9,
-			Eliminated: false,
-		},
-		{
-			Name:       "Team10",
-			Index:      9,
-			Round:      0,
-			Position:   10,
-			Eliminated: false,
-		},
-		{
-			Name:       "Team11",
-			Index:      10,
-			Round:      0,
-			Position:   11,
-			Eliminated: false,
-		},
-		{
-			Name:       "Team12",
-			Index:      11,
-			Round:      0,
-			Position:   12,
-			Eliminated: false,
-		},
-		{
-			Name:       "Team13",
-			Index:      12,
-			Round:      0,
-			Position:   13,
-			Eliminated: false,
-		},
-		{
-			Name:       "Team14",
-			Index:      13,
-			Round:      0,
-			Position:   14,
-			Eliminated: false,
-		},
-		{
-			Name:       "Team15",
-			Index:      14,
-			Round:      0,
-			Position:   15,
-			Eliminated: false,
-		},
-		{
-			Name:       "Team16",
-			Index:      15,
-			Round:      0,
-			Position:   16,
-			Eliminated: false,
-		},
-	}
+	Test_bracket_id = "59d8ef98-b83b-4a49-a069-cbd686d89736"
 
 	test_bracket = model.Bracket{
-		Name:   "Test_Bracket",
-		UserID: "12345",
-		Size:   16,
-		Type:   0,
-		Teams:  test_bracket_teams,
+		Name:     "Test_Bracket",
+		Username: "testuser",
+		Size:     16,
+		Type:     0,
+		Teams:    test_bracket_teams,
 	}
 )
 
@@ -170,7 +55,7 @@ func TestGetAllBrackets(t *testing.T) {
 
 	app, w := setup()
 
-	app.GetAllBrackets(w, r)
+	app.Router.ServeHTTP(w, r)
 
 	assert.Equal(t, http.StatusOK, w.Code)
 }
@@ -182,21 +67,20 @@ func TestCreateBracket(t *testing.T) {
 	}
 
 	requestBody := bytes.NewBuffer(jsonData)
-	r, err := http.NewRequest("POST", "/brackets", requestBody)
+	r, err := http.NewRequest("POST", "/users/testuser/brackets", requestBody)
 	if err != nil {
 		t.Fatal(err)
 	}
 
 	app, w := setup()
 
-	app.CreateBracket(w, r)
+	app.Router.ServeHTTP(w, r)
 
 	assert.Equal(t, http.StatusOK, w.Code)
 }
 
 func TestGetBracket(t *testing.T) {
-	address := "/brackets/"
-	address += Test_bracket_id
+	address := "/users/testuser/" + Test_bracket_id
 	r, err := http.NewRequest("GET", address, nil)
 	if err != nil {
 		t.Fatal(err)
@@ -204,7 +88,8 @@ func TestGetBracket(t *testing.T) {
 
 	app, w := setup()
 
-	app.GetBracket(w, r)
+	app.Router.ServeHTTP(w, r)
+	assert.Equal(t, http.StatusOK, w.Code)
 	response := decodeBracket(w, t)
 
 	assert.Equal(t, response.BracketID, Test_bracket_id)
@@ -223,7 +108,7 @@ func TestUpdateBracket(t *testing.T) {
 	}
 
 	requestBody := bytes.NewBuffer(jsonData)
-	url := "/brackets/"
+	url := "/users/testuser/"
 	url += Test_bracket_id
 	r, err := http.NewRequest("PUT", url, requestBody)
 	if err != nil {
@@ -232,7 +117,7 @@ func TestUpdateBracket(t *testing.T) {
 
 	app, w := setup()
 
-	app.UpdateBracket(w, r)
+	app.Router.ServeHTTP(w, r)
 
 	assert.Equal(t, http.StatusOK, w.Code)
 
@@ -243,10 +128,11 @@ func TestUpdateBracket(t *testing.T) {
 
 func TestDeleteBracket(t *testing.T) {
 	dummy_bracket := model.Bracket{
-		Name:  "YOU CAN'T SEE THIS!!!",
-		Size:  0,
-		Type:  0,
-		Teams: []model.Team{},
+		Name:     "YOU CAN'T SEE THIS!!!",
+		Size:     0,
+		Type:     0,
+		Username: "testuser",
+		Teams:    []model.Team{},
 	}
 
 	jsonData, err := json.Marshal(dummy_bracket)
@@ -255,26 +141,26 @@ func TestDeleteBracket(t *testing.T) {
 	}
 
 	requestBody := bytes.NewBuffer(jsonData)
-	r, err := http.NewRequest("POST", "/brackets", requestBody)
+	r, err := http.NewRequest("POST", "/users/testuser/brackets", requestBody)
 	if err != nil {
 		t.Fatal(err)
 	}
 
 	app, w := setup()
 
-	app.CreateBracket(w, r)
+	app.Router.ServeHTTP(w, r)
 	assert.Equal(t, http.StatusOK, w.Code)
 
 	response := decodeBracket(w, t)
 
-	url := "/brackets/" + response.BracketID
+	url := "/users/testuser/" + response.BracketID
 	r, err = http.NewRequest("GET", url, nil)
 	if err != nil {
 		t.Fatal(err)
 	}
 	w = httptest.NewRecorder()
 
-	app.GetBracket(w, r)
+	app.Router.ServeHTTP(w, r)
 
 	database_response := decodeBracket(w, t)
 	assert.Equal(t, response.BracketID, database_response.BracketID)
@@ -284,7 +170,7 @@ func TestDeleteBracket(t *testing.T) {
 		t.Fatal(err)
 	}
 	w = httptest.NewRecorder()
-	app.DeleteBracket(w, r)
+	app.Router.ServeHTTP(w, r)
 	assert.Equal(t, http.StatusNoContent, w.Code)
 
 	r, err = http.NewRequest("GET", url, nil)
@@ -292,6 +178,19 @@ func TestDeleteBracket(t *testing.T) {
 		t.Fatal(err)
 	}
 	w = httptest.NewRecorder()
-	app.GetBracket(w, r)
+	app.Router.ServeHTTP(w, r)
 	assert.Equal(t, http.StatusNotFound, w.Code)
+}
+
+func TestGetUserBracket(t *testing.T) {
+	r, err := http.NewRequest("GET", "/users/testuser/brackets", nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	app, w := setup()
+
+	app.Router.ServeHTTP(w, r)
+
+	assert.Equal(t, http.StatusOK, w.Code)
 }

@@ -88,6 +88,9 @@ func (a *App) GetAllUsers(w http.ResponseWriter, r *http.Request) {
 func (a *App) GetUser(w http.ResponseWriter, r *http.Request) {
 	handler.GetUser(a.DB, w, r)
 }
+func (a *App) UpdatePassword(w http.ResponseWriter, r *http.Request) {
+	handler.UpdatePassword(a.DB, w, r)
+}
 func (a *App) UpdateUser(w http.ResponseWriter, r *http.Request) {
 	handler.UpdateUser(a.DB, w, r)
 }
