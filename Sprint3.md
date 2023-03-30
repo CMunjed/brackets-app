@@ -21,4 +21,10 @@ looking to add E2E tests to enter certain number of teams and click through crea
 
 ## Back-end Unit Tests
 
+curl -X POST -H 'Content-Type:application/json' -d '{"iss":"test","nbf":123456789,"aud":"test","sub":"test","email":"test@email.com","email_verified":true,"azp":"test","name":"test","picture":"test","given_name":"test","iat":123456789,"exp":123456789,"jti":"test"}' localhost:3000/users/googlesignup
+
+curl localhost:3000/users
+
+curl -X PUT -H 'Content-Type:application/json' -d '{"iss":"test","nbf":123456789,"aud":"test","sub":"test","email":"test@email.com","email_verified":true,"azp":"test","name":"test","picture":"test","given_name":"test","iat":123456789,"exp":123456789,"jti":"test"}' localhost:3000/users/googlesignin
+
 ## Updated Back-end Documentation
