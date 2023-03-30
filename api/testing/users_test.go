@@ -8,6 +8,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	"example.com/api/app"
 	"example.com/api/app/model"
 	"github.com/go-playground/assert"
 )
@@ -24,6 +25,10 @@ var (
 		Username: "cantseeme",
 		Password: "cantseeme",
 	}
+
+	googlesignin_user = model.GoogleUser{
+		Email: "test@email.com",
+	}
 )
 
 func decodeUser(w *httptest.ResponseRecorder, t *testing.T) model.User {
@@ -39,6 +44,24 @@ func decodeUser(w *httptest.ResponseRecorder, t *testing.T) model.User {
 	}
 
 	return response
+}
+
+func login(t *testing.T, a *app.App, w *httptest.ResponseRecorder) model.User {
+	jsonData, err := json.Marshal(test_user)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	requestBody := bytes.NewBuffer(jsonData)
+
+	r, err := http.NewRequest("PUT", "/users/signin", requestBody)
+	if err != nil {
+		t.Fatal(err)
+	}
+	a.Router.ServeHTTP(w, r)
+	assert.Equal(t, http.StatusOK, w.Code)
+
+	return decodeUser(w, t)
 }
 
 func TestSignUp(t *testing.T) {
@@ -62,25 +85,18 @@ func TestSignUp(t *testing.T) {
 func TestSignIn(t *testing.T) {
 	app, w := setup()
 
-	jsonData, err := json.Marshal(test_user)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	requestBody := bytes.NewBuffer(jsonData)
-
-	r, err := http.NewRequest("PUT", "/users/signin", requestBody)
-	if err != nil {
-		t.Fatal(err)
-	}
-	app.Router.ServeHTTP(w, r)
-	assert.Equal(t, http.StatusOK, w.Code)
+	response := login(t, app, w)
+	assert.Equal(t, test_user.Username, response.Username)
 }
 
 func TestGetUser(t *testing.T) {
 	app, w := setup()
 
-	url := "/users/" + test_user.Username
+	user := login(t, app, w)
+
+	url := "/users/" + user.UserID
+
+	w = httptest.NewRecorder()
 
 	r, err := http.NewRequest("GET", url, nil)
 	if err != nil {
@@ -91,14 +107,21 @@ func TestGetUser(t *testing.T) {
 	response := decodeUser(w, t)
 
 	assert.Equal(t, http.StatusOK, w.Code)
-	assert.Equal(t, test_user.Username, response.Username)
+	assert.Equal(t, user.UserID, response.UserID)
 }
 
 func TestUpdatePassword(t *testing.T) {
 	app, w := setup()
 
-	user_update := test_user
-	user_update.Password = "newpassword"
+	user := login(t, app, w)
+
+	w = httptest.NewRecorder()
+	type update struct {
+		Password string `json:"password"`
+	}
+	user_update := update{
+		Password: "newpassword",
+	}
 
 	jsonData, err := json.Marshal(user_update)
 	if err != nil {
@@ -107,7 +130,7 @@ func TestUpdatePassword(t *testing.T) {
 
 	requestBody := bytes.NewBuffer(jsonData)
 
-	url := "/users/" + test_user.Username
+	url := "/users/" + user.UserID
 
 	r, err := http.NewRequest("PUT", url, requestBody)
 	if err != nil {
@@ -118,11 +141,14 @@ func TestUpdatePassword(t *testing.T) {
 	response := decodeUser(w, t)
 
 	assert.Equal(t, http.StatusOK, w.Code)
-	assert.Equal(t, test_user.Username, response.Username)
+	assert.Equal(t, user.UserID, response.UserID)
 
 	url = "/users/signin"
 
-	jsonData, err = json.Marshal(user_update)
+	test_user.Password = user_update.Password
+	test_user.UserID = user.UserID
+
+	jsonData, err = json.Marshal(test_user)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -143,8 +169,14 @@ func TestUpdatePassword(t *testing.T) {
 func TestUpdateEmail(t *testing.T) {
 	app, w := setup()
 
-	user_update := model.User{}
-	user_update.Email = "newemail@example.com"
+	user := login(t, app, w)
+	w = httptest.NewRecorder()
+	type update struct {
+		Email string `json:"email"`
+	}
+	user_update := update{
+		Email: "newemail@example.com",
+	}
 
 	jsonData, err := json.Marshal(user_update)
 	if err != nil {
@@ -152,7 +184,7 @@ func TestUpdateEmail(t *testing.T) {
 	}
 
 	requestBody := bytes.NewBuffer(jsonData)
-	url := "/users/" + test_user.Username
+	url := "/users/" + user.UserID
 
 	r, err := http.NewRequest("PUT", url, requestBody)
 	if err != nil {
@@ -163,7 +195,7 @@ func TestUpdateEmail(t *testing.T) {
 	response := decodeUser(w, t)
 
 	assert.Equal(t, http.StatusOK, w.Code)
-	assert.Equal(t, test_user.Username, response.Username)
+	assert.Equal(t, user.UserID, response.UserID)
 	assert.Equal(t, user_update.Email, response.Email)
 }
 
@@ -187,8 +219,10 @@ func TestDeleteUser(t *testing.T) {
 	assert.Equal(t, http.StatusCreated, w.Code)
 
 	//Delete the dummy user
+	dummy_user = decodeUser(w, t)
+
 	w = httptest.NewRecorder()
-	url := "/users/" + dummy_user.Username
+	url := "/users/" + dummy_user.UserID
 
 	r, err = http.NewRequest("DELETE", url, nil)
 	if err != nil {

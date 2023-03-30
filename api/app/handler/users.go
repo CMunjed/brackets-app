@@ -76,6 +76,8 @@ func SignIn(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 		respondError(w, http.StatusUnauthorized, err.Error())
 	}
 
+	user.UserID = storedUser.UserID
+
 	respondJSON(w, http.StatusOK, user)
 }
 
@@ -208,7 +210,7 @@ func GoogleSignIn(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	respondJSON(w, http.StatusOK, nil)
+	respondJSON(w, http.StatusOK, storedUser)
 }
 
 func getUserFromEmailOr404(db *gorm.DB, email string, w http.ResponseWriter, r *http.Request) *model.User {

@@ -14,8 +14,6 @@ import (
 )
 
 var (
-	Test_bracket_id = "59d8ef98-b83b-4a49-a069-cbd686d89736"
-
 	test_bracket = model.Bracket{
 		Name:   "Test_Bracket",
 		UserID: "testuser",
@@ -30,6 +28,28 @@ func setup() (*app.App, *httptest.ResponseRecorder) {
 	app := &app.App{}
 	app.Initialize()
 	return app, w
+}
+
+func getTestBracketID(t *testing.T, a *app.App, w *httptest.ResponseRecorder) string {
+	r, err := http.NewRequest("GET", "/brackets", nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	a.Router.ServeHTTP(w, r)
+
+	var response []model.Bracket
+	body, err := io.ReadAll(w.Result().Body)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	err = json.Unmarshal(body, &response)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	return response[0].BracketID
 }
 
 func decodeBracket(w *httptest.ResponseRecorder, t *testing.T) model.Bracket {
@@ -80,19 +100,22 @@ func TestCreateBracket(t *testing.T) {
 }
 
 func TestGetBracket(t *testing.T) {
-	address := "/users/testuser/" + Test_bracket_id
+
+	app, w := setup()
+
+	test_bracket_id := getTestBracketID(t, app, w)
+	address := "/users/testuser/" + test_bracket_id
 	r, err := http.NewRequest("GET", address, nil)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	app, w := setup()
-
+	w = httptest.NewRecorder()
 	app.Router.ServeHTTP(w, r)
 	assert.Equal(t, http.StatusOK, w.Code)
 	response := decodeBracket(w, t)
 
-	assert.Equal(t, response.BracketID, Test_bracket_id)
+	assert.Equal(t, response.BracketID, test_bracket_id)
 }
 
 func TestUpdateBracket(t *testing.T) {
@@ -108,15 +131,17 @@ func TestUpdateBracket(t *testing.T) {
 	}
 
 	requestBody := bytes.NewBuffer(jsonData)
+
+	app, w := setup()
+	test_bracket_id := getTestBracketID(t, app, w)
 	url := "/users/testuser/"
-	url += Test_bracket_id
+	url += test_bracket_id
 	r, err := http.NewRequest("PUT", url, requestBody)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	app, w := setup()
-
+	w = httptest.NewRecorder()
 	app.Router.ServeHTTP(w, r)
 
 	assert.Equal(t, http.StatusOK, w.Code)

@@ -36,6 +36,8 @@ func (a *App) setRouters() {
 
 	a.Post("/users/signup", a.SignUp)
 	a.Put("/users/signin", a.SignIn) // Put operation because sessions
+	a.Post("/users/googlesignup", a.GoogleSignUp)
+	a.Put("/users/googlesignin", a.GoogleSignIn)
 	a.Get("/users", a.GetAllUsers)
 	a.Get("/users/{userid}", a.GetUser) // Changed from username to UUID as identifier
 	a.Put("/users/{userid}", a.UpdateUser)
@@ -51,8 +53,6 @@ func (a *App) setRouters() {
 	a.Get("/users/{userid}/{bracketid}/teams/{index}", a.GetTeam)
 	a.Put("/users/{userid}/{bracketid}/teams/{index}", a.UpdateTeam)
 	a.Delete("/users/{userid}/{bracketid}/teams/{index}", a.DeleteTeam)
-	a.Post("/users/googlesignup", a.GoogleSignUp)
-	a.Put("/users/googlesignin", a.GoogleSignIn)
 }
 
 // Wrap the router for GET method

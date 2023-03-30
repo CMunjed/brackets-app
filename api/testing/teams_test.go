@@ -1,6 +1,7 @@
 package testing
 
 import (
+	"bytes"
 	"encoding/json"
 	"io"
 	"net/http"
@@ -62,69 +63,6 @@ var (
 			Position:   7,
 			Eliminated: false,
 		},
-		{
-			Name:       "Team8",
-			Index:      8,
-			Round:      0,
-			Position:   8,
-			Eliminated: false,
-		},
-		{
-			Name:       "Team9",
-			Index:      8,
-			Round:      0,
-			Position:   9,
-			Eliminated: false,
-		},
-		{
-			Name:       "Team10",
-			Index:      9,
-			Round:      0,
-			Position:   10,
-			Eliminated: false,
-		},
-		{
-			Name:       "Team11",
-			Index:      10,
-			Round:      0,
-			Position:   11,
-			Eliminated: false,
-		},
-		{
-			Name:       "Team12",
-			Index:      11,
-			Round:      0,
-			Position:   12,
-			Eliminated: false,
-		},
-		{
-			Name:       "Team13",
-			Index:      12,
-			Round:      0,
-			Position:   13,
-			Eliminated: false,
-		},
-		{
-			Name:       "Team14",
-			Index:      13,
-			Round:      0,
-			Position:   14,
-			Eliminated: false,
-		},
-		{
-			Name:       "Team15",
-			Index:      14,
-			Round:      0,
-			Position:   15,
-			Eliminated: false,
-		},
-		{
-			Name:       "Team16",
-			Index:      15,
-			Round:      0,
-			Position:   16,
-			Eliminated: false,
-		},
 	}
 )
 
@@ -146,12 +84,13 @@ func decodeTeam(w *httptest.ResponseRecorder, t *testing.T) model.Team {
 func TestGetAllTeams(t *testing.T) {
 	app, w := setup()
 
-	url := "/users/testuser/" + Test_bracket_id + "/teams"
+	url := "/users/testuser/" + getTestBracketID(t, app, w) + "/teams"
 	r, err := http.NewRequest("GET", url, nil)
 	if err != nil {
 		t.Fatal(err)
 	}
 
+	w = httptest.NewRecorder()
 	app.Router.ServeHTTP(w, r)
 
 	assert.Equal(t, w.Code, http.StatusOK)
@@ -179,12 +118,13 @@ func TestGetAllTeams(t *testing.T) {
 func TestGetTeam(t *testing.T) {
 	app, w := setup()
 
-	url := "/users/testuser/" + Test_bracket_id + "/teams/0"
+	url := "/users/testuser/" + getTestBracketID(t, app, w) + "/teams/0"
 	r, err := http.NewRequest("GET", url, nil)
 	if err != nil {
 		t.Fatal(err)
 	}
 
+	w = httptest.NewRecorder()
 	app.Router.ServeHTTP(w, r)
 
 	assert.Equal(t, w.Code, http.StatusOK)
@@ -192,4 +132,93 @@ func TestGetTeam(t *testing.T) {
 	response := decodeTeam(w, t)
 
 	assert.Equal(t, response, test_bracket_teams[0])
+}
+
+func TestCreateTeam(t *testing.T) {
+	app, w := setup()
+
+	newTeam := model.Team{
+		Name: "Team8",
+	}
+
+	jsonData, err := json.Marshal(newTeam)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	requestBody := bytes.NewBuffer(jsonData)
+
+	url := "/users/testuser/" + getTestBracketID(t, app, w) + "/teams"
+	r, err := http.NewRequest("POST", url, requestBody)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	w = httptest.NewRecorder()
+	app.Router.ServeHTTP(w, r)
+
+	assert.Equal(t, w.Code, http.StatusCreated)
+
+	response := decodeBracket(w, t)
+	check := response.Teams[7]
+
+	assert.Equal(t, check.Name, "Team8")
+	assert.Equal(t, check.Index, 7)
+	assert.Equal(t, check.Round, 0)
+	assert.Equal(t, check.Position, 8)
+	assert.Equal(t, check.Eliminated, true)
+}
+
+func TestUpdateTeam(t *testing.T) {
+	app, w := setup()
+
+	newTeam := model.Team{
+		Name:       "Lamda",
+		Index:      7,
+		Round:      0,
+		Position:   8,
+		Eliminated: true,
+	}
+
+	jsonData, err := json.Marshal(newTeam)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	requestBody := bytes.NewBuffer(jsonData)
+
+	url := "/users/testuser/" + getTestBracketID(t, app, w) + "/teams/7"
+	r, err := http.NewRequest("PUT", url, requestBody)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	w = httptest.NewRecorder()
+	app.Router.ServeHTTP(w, r)
+
+	assert.Equal(t, w.Code, http.StatusOK)
+
+	response := decodeBracket(w, t)
+	check := response.Teams[7]
+
+	assert.Equal(t, check.Name, "Lamda")
+	assert.Equal(t, check.Index, 7)
+	assert.Equal(t, check.Round, 0)
+	assert.Equal(t, check.Position, 8)
+	assert.Equal(t, check.Eliminated, true)
+}
+
+func TestDeleteTeam(t *testing.T) {
+	app, w := setup()
+
+	url := "/users/testuser/" + getTestBracketID(t, app, w) + "/teams/7"
+	r, err := http.NewRequest("DELETE", url, nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	w = httptest.NewRecorder()
+	app.Router.ServeHTTP(w, r)
+
+	assert.Equal(t, w.Code, http.StatusOK)
 }
