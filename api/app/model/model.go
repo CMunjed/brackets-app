@@ -27,7 +27,7 @@ type Bracket struct {
 	gorm.Model
 	Name      string `json:"name"`
 	BracketID string `gorm:"unique" json:"bracketid"`
-	UserID    string `json:"userid"`
+	Username  string `json:"username"`
 	Size      int    `json:"size"`
 	Matches   int    `json:"matches"`
 	Type      int    `json:"type"`

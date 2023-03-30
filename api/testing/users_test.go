@@ -107,7 +107,7 @@ func TestUpdatePassword(t *testing.T) {
 
 	requestBody := bytes.NewBuffer(jsonData)
 
-	url := "/users/" + test_user.Username + "/password"
+	url := "/users/" + test_user.Username
 
 	r, err := http.NewRequest("PUT", url, requestBody)
 	if err != nil {
@@ -152,7 +152,7 @@ func TestUpdateEmail(t *testing.T) {
 	}
 
 	requestBody := bytes.NewBuffer(jsonData)
-	url := "/users/" + test_user.Username + "/email"
+	url := "/users/" + test_user.Username
 
 	r, err := http.NewRequest("PUT", url, requestBody)
 	if err != nil {

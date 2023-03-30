@@ -1,7 +1,14 @@
 package testing
 
 import (
+	"encoding/json"
+	"io"
+	"net/http"
+	"net/http/httptest"
+	"testing"
+
 	"example.com/api/app/model"
+	"github.com/go-playground/assert"
 )
 
 var (
@@ -120,3 +127,69 @@ var (
 		},
 	}
 )
+
+func decodeTeam(w *httptest.ResponseRecorder, t *testing.T) model.Team {
+	var response model.Team
+	body, err := io.ReadAll(w.Result().Body)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	err = json.Unmarshal(body, &response)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	return response
+}
+
+func TestGetAllTeams(t *testing.T) {
+	app, w := setup()
+
+	url := "/users/testuser/" + Test_bracket_id + "/teams"
+	r, err := http.NewRequest("GET", url, nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	app.Router.ServeHTTP(w, r)
+
+	assert.Equal(t, w.Code, http.StatusOK)
+
+	var response []model.Team
+	body, err := io.ReadAll(w.Result().Body)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	err = json.Unmarshal(body, &response)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	for i := 0; i < len(response); i++ {
+		assert.Equal(t, response[i].Name, test_bracket_teams[i].Name)
+		assert.Equal(t, response[i].Index, test_bracket_teams[i].Index)
+		assert.Equal(t, response[i].Round, test_bracket_teams[i].Round)
+		assert.Equal(t, response[i].Position, test_bracket_teams[i].Position)
+		assert.Equal(t, response[i].Eliminated, test_bracket_teams[i].Eliminated)
+	}
+}
+
+func TestGetTeam(t *testing.T) {
+	app, w := setup()
+
+	url := "/users/testuser/" + Test_bracket_id + "/teams/0"
+	r, err := http.NewRequest("GET", url, nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	app.Router.ServeHTTP(w, r)
+
+	assert.Equal(t, w.Code, http.StatusOK)
+
+	response := decodeTeam(w, t)
+
+	assert.Equal(t, response, test_bracket_teams[0])
+}

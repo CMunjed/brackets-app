@@ -132,8 +132,7 @@ func UpdatePassword(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 	respondJSON(w, http.StatusOK, user)
 }
 
-// This function updates the email for the user
-func UpdateEmail(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
+func UpdateUser(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 
 	username := vars["username"]

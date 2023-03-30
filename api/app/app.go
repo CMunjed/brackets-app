@@ -38,8 +38,7 @@ func (a *App) setRouters() {
 	a.Put("/users/signin", a.SignIn) // Put operation because sessions
 	a.Get("/users", a.GetAllUsers)
 	a.Get("/users/{username}", a.GetUser) // Might change from username to UUID as identifier
-	a.Put("/users/{username}/password", a.UpdatePassword)
-	a.Put("/users/{username}/email", a.UpdateEmail)
+	a.Put("/users/{username}", a.UpdateUser)
 	a.Delete("/users/{username}", a.DeleteUser)
 	a.Get("/users/{username}/brackets", a.GetUserBrackets)
 	a.Post("/users/{username}/brackets", a.CreateBracket)
@@ -92,8 +91,8 @@ func (a *App) GetUser(w http.ResponseWriter, r *http.Request) {
 func (a *App) UpdatePassword(w http.ResponseWriter, r *http.Request) {
 	handler.UpdatePassword(a.DB, w, r)
 }
-func (a *App) UpdateEmail(w http.ResponseWriter, r *http.Request) {
-	handler.UpdateEmail(a.DB, w, r)
+func (a *App) UpdateUser(w http.ResponseWriter, r *http.Request) {
+	handler.UpdateUser(a.DB, w, r)
 }
 func (a *App) DeleteUser(w http.ResponseWriter, r *http.Request) {
 	handler.DeleteUser(a.DB, w, r)
