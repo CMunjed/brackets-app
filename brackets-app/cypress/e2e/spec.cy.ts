@@ -7,13 +7,11 @@ describe('template spec', () => {
   })
 
   
-  /*
   // test text enter in box
   it('passes text enter test', () => {
     cy.visit('http://localhost:4200/')
-    cy.get('input').type('8')
+    cy.get('input').contains('').type('8')
   })
-  */
 
   // test click on add teams button
   it('passes click test 1', () => {
@@ -26,5 +24,5 @@ describe('template spec', () => {
     cy.visit('http://localhost:4200/')
     cy.contains('Sign in with Google').click()
   })
-  
+
 })
