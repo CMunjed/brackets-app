@@ -182,30 +182,9 @@ func DeleteUser(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 func GoogleSignUp(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 	//vars := mux.Vars(r)
 
-	type GoogleUser struct {
-		//gorm.Model
-		Aud    string `json:"aud"`
-		Azp    string `json:"azp"`
-		Email  string `json:"email"`
-		Emailv bool   `json:"email_verified"`
-		Exp    int    `json:"exp"`
-		Gname  string `json:"given_name"`
-		//Fname	 string `json:"family_name"`
-		Iat    int    `json:"iat"`
-		Iss    string `json:"iss"`
-		Jti    string `json:"jti"`
-		Name   string `json:"name"`
-		Nbf    int    `json:"nbf"`
-		Imgurl string `json:"picture"`
-		Id     string `json:"sub"`
-	}
-
-	gdata := GoogleUser{}
+	gdata := model.GoogleUser{}
 
 	decoder := json.NewDecoder(r.Body)
-	/*var data struct {
-	    Token string json:"token"
-	}*/
 
 	err := decoder.Decode(&gdata)
 	if err != nil {
@@ -216,7 +195,7 @@ func GoogleSignUp(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 	user := &model.User{
 		Email:    gdata.Email,
 		Username: gdata.Email[:strings.Index(gdata.Email, "@")],
-		Password: uuid.New().String(),
+		Password: uuid.New().String(), //Generates a random UUID as a password, since the user will never log into this account without google
 	}
 
 	/*email := gdata.Email
@@ -238,4 +217,26 @@ func GoogleSignUp(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 	SignUp(db, w, newRequest)
 
 	//respondJSON(w, http.StatusOK, user)
+}
+
+func GoogleSignIn(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
+
+	gdata := model.GoogleUser{}
+
+	decoder := json.NewDecoder(r.Body)
+
+	err := decoder.Decode(&gdata)
+	if err != nil {
+		respondError(w, http.StatusBadRequest, err.Error())
+		return
+	}
+
+	username := gdata.Email[:strings.Index(gdata.Email, "@")]
+	storedUser := getUserOr404(db, username, w, r)
+	if storedUser == nil {
+		//respondError(w, http.StatusInternalServerError, err.Error())
+		//Error called in getUserOr404 helper function I think
+		return
+	}
+
 }

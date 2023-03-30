@@ -52,7 +52,7 @@ func (a *App) setRouters() {
 	a.Put("/users/{username}/{bracketid}/teams/{index}", a.UpdateTeam)
 	a.Delete("/users/{username}/{bracketid}/teams/{index}", a.DeleteTeam)
 	a.Post("/users/googlesignup", a.GoogleSignUp)
-
+	a.Put("/users/googlesignin", a.GoogleSignIn)
 }
 
 // Wrap the router for GET method
@@ -101,6 +101,9 @@ func (a *App) DeleteUser(w http.ResponseWriter, r *http.Request) {
 // Handlers for Google sign-in
 func (a *App) GoogleSignUp(w http.ResponseWriter, r *http.Request) {
 	handler.GoogleSignUp(a.DB, w, r)
+}
+func (a *App) GoogleSignIn(w http.ResponseWriter, r *http.Request) {
+	handler.GoogleSignIn(a.DB, w, r)
 }
 
 /*func (a *App) SignUp(w http.ResponseWriter, r *http.Request) {
