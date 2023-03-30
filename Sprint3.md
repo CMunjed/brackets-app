@@ -10,6 +10,13 @@ During this sprint, much of the actual bracket creation was completed on the fro
 Back End:
 
 ## Front-End Unit Tests
+create and run web application
+ensure existence of and click on sign in component
+ensure existence of and click on add teams component, and subsequent creation and clicking of edit team selection
+ensure existence of and click on github star button
+
+looking to add E2E tests to enter certain number of teams and click through created bracket, but text entry has been a pain so far
+
 
 ## Back-end Unit Tests
 
