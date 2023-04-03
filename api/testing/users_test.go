@@ -27,7 +27,19 @@ var (
 	}
 
 	googlesignin_user = model.GoogleUser{
-		Email: "test@email.com",
+		Iss:    "test",
+		Nbf:    123456789,
+		Aud:    "test",
+		Id:     "test",
+		Email:  "test@email.com",
+		Emailv: true,
+		Azp:    "test",
+		Name:   "test",
+		Imgurl: "test",
+		Gname:  "test",
+		Iat:    123456789,
+		Exp:    123456789,
+		Jti:    "test",
 	}
 )
 
@@ -237,6 +249,43 @@ func TestGetAllUsers(t *testing.T) {
 	app, w := setup()
 
 	r, err := http.NewRequest("GET", "/users", nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+	app.Router.ServeHTTP(w, r)
+
+	assert.Equal(t, http.StatusOK, w.Code)
+}
+
+func TestGoogleSignup(t *testing.T) {
+	app, w := setup()
+
+	jsonData, err := json.Marshal(googlesignin_user)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	requestBody := bytes.NewBuffer(jsonData)
+
+	r, err := http.NewRequest("POST", "/users/googlesignup", requestBody)
+	if err != nil {
+		t.Fatal(err)
+	}
+	app.Router.ServeHTTP(w, r)
+	assert.Equal(t, http.StatusCreated, w.Code)
+}
+
+func TestGoogleSignIn(t *testing.T) {
+	app, w := setup()
+
+	jsonData, err := json.Marshal(googlesignin_user)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	requestBody := bytes.NewBuffer(jsonData)
+
+	r, err := http.NewRequest("PUT", "/users/googlesignin", requestBody)
 	if err != nil {
 		t.Fatal(err)
 	}

@@ -24,12 +24,13 @@ func AddTeam(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 		defer r.Body.Close()
 
 		team.BracketID = bracket.BracketID
-		team.Position = len(bracket.Teams)
-		team.Index = len(bracket.Teams) - 1
+		team.Position = len(bracket.Teams) + 1
+		team.Index = len(bracket.Teams)
 		team.Round = 1
 		team.Eliminated = false
 		bracket.Teams = append(bracket.Teams, team)
 		saveBracket(db, w, bracket)
+		respondJSON(w, http.StatusCreated, &bracket)
 	}
 }
 
@@ -62,7 +63,7 @@ func UpdateTeam(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 	if bracket != nil {
 		indexString := vars["index"]
 		index, err := strconv.Atoi(indexString)
-		if err == nil {
+		if err != nil {
 			respondError(w, http.StatusBadRequest, err.Error())
 			return
 		}
@@ -77,11 +78,8 @@ func UpdateTeam(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 
 		bracket.Teams[index] = team
 
-		if err := db.Save(&bracket).Error; err != nil {
-			respondError(w, http.StatusInternalServerError, err.Error())
-			return
-		}
-		respondJSON(w, http.StatusOK, bracket)
+		saveBracket(db, w, bracket)
+		respondJSON(w, http.StatusOK, &bracket)
 	}
 }
 
@@ -109,5 +107,6 @@ func DeleteTeam(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 
 		bracket.Teams = firstPartition
 		saveBracket(db, w, bracket)
+		respondJSON(w, http.StatusNoContent, &bracket)
 	}
 }

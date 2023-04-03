@@ -106,7 +106,7 @@ func TestGetAllTeams(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	for i := 0; i < len(response); i++ {
+	for i := 0; i < len(test_bracket_teams); i++ {
 		assert.Equal(t, response[i].Name, test_bracket_teams[i].Name)
 		assert.Equal(t, response[i].Index, test_bracket_teams[i].Index)
 		assert.Equal(t, response[i].Round, test_bracket_teams[i].Round)
@@ -131,7 +131,11 @@ func TestGetTeam(t *testing.T) {
 
 	response := decodeTeam(w, t)
 
-	assert.Equal(t, response, test_bracket_teams[0])
+	assert.Equal(t, response.Name, test_bracket_teams[0].Name)
+	assert.Equal(t, response.Index, test_bracket_teams[0].Index)
+	assert.Equal(t, response.Round, test_bracket_teams[0].Round)
+	assert.Equal(t, response.Position, test_bracket_teams[0].Position)
+	assert.Equal(t, response.Eliminated, test_bracket_teams[0].Eliminated)
 }
 
 func TestCreateTeam(t *testing.T) {
@@ -164,9 +168,9 @@ func TestCreateTeam(t *testing.T) {
 
 	assert.Equal(t, check.Name, "Team8")
 	assert.Equal(t, check.Index, 7)
-	assert.Equal(t, check.Round, 0)
+	assert.Equal(t, check.Round, 1)
 	assert.Equal(t, check.Position, 8)
-	assert.Equal(t, check.Eliminated, true)
+	assert.Equal(t, check.Eliminated, false)
 }
 
 func TestUpdateTeam(t *testing.T) {
@@ -175,7 +179,7 @@ func TestUpdateTeam(t *testing.T) {
 	newTeam := model.Team{
 		Name:       "Lamda",
 		Index:      7,
-		Round:      0,
+		Round:      1,
 		Position:   8,
 		Eliminated: true,
 	}
@@ -203,7 +207,7 @@ func TestUpdateTeam(t *testing.T) {
 
 	assert.Equal(t, check.Name, "Lamda")
 	assert.Equal(t, check.Index, 7)
-	assert.Equal(t, check.Round, 0)
+	assert.Equal(t, check.Round, 1)
 	assert.Equal(t, check.Position, 8)
 	assert.Equal(t, check.Eliminated, true)
 }
@@ -220,5 +224,5 @@ func TestDeleteTeam(t *testing.T) {
 	w = httptest.NewRecorder()
 	app.Router.ServeHTTP(w, r)
 
-	assert.Equal(t, w.Code, http.StatusOK)
+	assert.Equal(t, w.Code, http.StatusNoContent)
 }

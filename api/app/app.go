@@ -138,7 +138,7 @@ func (a *App) GetTeam(w http.ResponseWriter, r *http.Request) {
 	handler.GetTeam(a.DB, w, r)
 }
 func (a *App) UpdateTeam(w http.ResponseWriter, r *http.Request) {
-	handler.AddTeam(a.DB, w, r)
+	handler.UpdateTeam(a.DB, w, r)
 }
 func (a *App) DeleteTeam(w http.ResponseWriter, r *http.Request) {
 	handler.DeleteTeam(a.DB, w, r)

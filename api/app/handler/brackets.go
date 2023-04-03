@@ -37,7 +37,6 @@ func saveBracket(db *gorm.DB, w http.ResponseWriter, b *model.Bracket) {
 		respondError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
-	respondJSON(w, http.StatusOK, *b)
 }
 
 // GetBracket Returns a bracket in JSON formatting
@@ -83,6 +82,7 @@ func CreateBracket(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 	}
 
 	saveBracket(db, w, &bracket)
+	respondJSON(w, http.StatusOK, &bracket)
 }
 
 // UpdateBracket updates the parameters of a bracket
@@ -98,6 +98,7 @@ func UpdateBracket(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 		defer r.Body.Close()
 
 		saveBracket(db, w, bracket)
+		respondJSON(w, http.StatusOK, &bracket)
 	}
 }
 
