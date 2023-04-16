@@ -2,6 +2,8 @@ package model
 
 import (
 	//"github.com/google/uuid"
+	"time"
+
 	"gorm.io/gorm"
 )
 
@@ -53,6 +55,16 @@ type Bracket struct {
 	Type      int    `json:"type"`
 	Teams     []Team `json:"teams"`
 }
+
+type Session struct {
+	User   string
+	Token  string
+	Expiry time.Time
+}
+
+/*func (s Session) isExpired() bool {
+	return s.Expiry.Before(time.Now())
+}*/
 
 // DBMigrate will create and migrate the tables, and then make the some relationships if necessary
 func DBMigrate(db *gorm.DB) *gorm.DB {

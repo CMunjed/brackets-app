@@ -3,8 +3,10 @@ package handler
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"strings"
+	"time"
 
 	"example.com/api/app/model"
 	"github.com/google/uuid"
@@ -77,6 +79,8 @@ func SignIn(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 	}
 
 	user.UserID = storedUser.UserID
+
+	GenerateUserSession(db, user.Email, w)
 
 	respondJSON(w, http.StatusOK, user)
 }
@@ -210,6 +214,8 @@ func GoogleSignIn(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	GenerateUserSession(db, email, w)
+
 	respondJSON(w, http.StatusOK, storedUser)
 }
 
@@ -220,4 +226,145 @@ func getUserFromEmailOr404(db *gorm.DB, email string, w http.ResponseWriter, r *
 		return nil
 	}
 	return &user
+}
+
+func GenerateUserSession(db *gorm.DB, email string, w http.ResponseWriter) {
+	sessionToken := uuid.NewString()
+	expiresAt := time.Now().Add(120 * time.Second)
+
+	userSession := &model.Session{
+		User:   email,
+		Expiry: expiresAt,
+	}
+
+	if err := db.Save(&userSession).Error; err != nil {
+		respondError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	http.SetCookie(w, &http.Cookie{
+		Name:    "session_token",
+		Value:   sessionToken,
+		Expires: expiresAt,
+	})
+
+	//respondJSON(w, http.StatusOK, userSession)
+}
+
+func RefreshSession(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
+	c, err := r.Cookie("session_token")
+	if err != nil {
+		if err == http.ErrNoCookie {
+			//w.WriteHeader(http.StatusUnauthorized)
+			respondError(w, http.StatusUnauthorized, err.Error())
+			return
+		}
+		//w.WriteHeader(http.StatusBadRequest)
+		respondError(w, http.StatusBadRequest, err.Error())
+		return
+	}
+	sessionToken := c.Value
+
+	userSession := &model.Session{}
+
+	if err := db.First(&userSession, model.Session{Token: sessionToken}).Error; err != nil {
+		respondError(w, http.StatusUnauthorized, err.Error())
+		return
+	}
+	if isExpired(userSession) {
+		if err := db.Delete(&userSession).Error; err != nil {
+			respondError(w, http.StatusInternalServerError, err.Error())
+			return
+		}
+		respondError(w, http.StatusUnauthorized, "Unauthorized")
+	}
+
+	GenerateUserSession(db, userSession.User, w)
+
+	if err := db.Delete(&userSession).Error; err != nil {
+		respondError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	//Any way to check the user session after calling the GenerateUserSession function?
+	//Should this respondJSON?
+
+}
+
+func isExpired(s *model.Session) bool {
+	return s.Expiry.Before(time.Now())
+}
+
+func Logout(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
+	c, err := r.Cookie("session_token")
+	if err != nil {
+		if err == http.ErrNoCookie {
+			// If the cookie is not set, return an unauthorized status
+			respondError(w, http.StatusUnauthorized, err.Error())
+			return
+		}
+		// For any other type of error, return a bad request status
+		respondError(w, http.StatusBadRequest, err.Error())
+		return
+	}
+	sessionToken := c.Value
+
+	// Remove the user's session
+	//delete(sessions, sessionToken)
+	if err := db.Delete(model.Session{Token: sessionToken}).Error; err != nil {
+		respondError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	//Unsure if the above works, EXPERIMENTAL
+
+	// We need to let the client know that the cookie is expired
+	// In the response, we set the session token to an empty
+	// value and set its expiry as the current time
+	http.SetCookie(w, &http.Cookie{
+		Name:    "session_token",
+		Value:   "",
+		Expires: time.Now(),
+	})
+
+	//Unsure how to respondJSON
+	//respondJSON(w, http.StatusOK, )
+}
+
+func Welcome(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
+	// We can obtain the session token from the requests cookies, which come with every request
+	c, err := r.Cookie("session_token")
+	if err != nil {
+		if err == http.ErrNoCookie {
+			// If the cookie is not set, return an unauthorized status
+			respondError(w, http.StatusUnauthorized, err.Error())
+			return
+		}
+		// For any other type of error, return a bad request status
+		respondError(w, http.StatusBadRequest, err.Error())
+		return
+	}
+	sessionToken := c.Value
+
+	// We then get the session from our session map
+	userSession := &model.Session{}
+
+	if err := db.First(&userSession, model.Session{Token: sessionToken}).Error; err != nil {
+		respondError(w, http.StatusUnauthorized, err.Error())
+		return
+	}
+	// If the session is present, but has expired, we can delete the session, and return
+	// an unauthorized status
+	if isExpired(userSession) {
+		if err := db.Delete(&userSession).Error; err != nil {
+			respondError(w, http.StatusInternalServerError, err.Error())
+			return
+		}
+		respondError(w, http.StatusUnauthorized, "Unauthorized")
+	}
+
+	// If the session is valid, return the welcome message to the user
+	w.Write([]byte(fmt.Sprintf("Welcome %s!", userSession.User)))
+
+	//Unsure how to respondJSON
 }

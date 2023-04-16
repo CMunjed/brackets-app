@@ -38,6 +38,9 @@ func (a *App) setRouters() {
 	a.Put("/users/signin", a.SignIn) // Put operation because sessions
 	a.Post("/users/googlesignup", a.GoogleSignUp)
 	a.Put("/users/googlesignin", a.GoogleSignIn)
+	a.Put("/users/logout", a.Logout)
+	a.Put("/users/refresh", a.Refresh)
+	a.Put("/welcome", a.Welcome)
 	a.Get("/users", a.GetAllUsers)
 	a.Get("/users/{userid}", a.GetUser) // Changed from username to UUID as identifier
 	a.Put("/users/{userid}", a.UpdateUser)
@@ -101,6 +104,17 @@ func (a *App) GoogleSignUp(w http.ResponseWriter, r *http.Request) {
 }
 func (a *App) GoogleSignIn(w http.ResponseWriter, r *http.Request) {
 	handler.GoogleSignIn(a.DB, w, r)
+}
+
+// Handlers for user session functions
+func (a *App) Logout(w http.ResponseWriter, r *http.Request) {
+	handler.Logout(a.DB, w, r)
+}
+func (a *App) Refresh(w http.ResponseWriter, r *http.Request) {
+	handler.RefreshSession(a.DB, w, r)
+}
+func (a *App) Welcome(w http.ResponseWriter, r *http.Request) {
+	handler.Welcome(a.DB, w, r)
 }
 
 /*func (a *App) SignUp(w http.ResponseWriter, r *http.Request) {
