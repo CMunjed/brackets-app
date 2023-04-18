@@ -2,6 +2,7 @@ package handler
 
 import (
 	"encoding/json"
+	"errors"
 	"math"
 	"net/http"
 
@@ -14,7 +15,7 @@ import (
 // getBracketOr404 gets a bracket instance if exists, or respond the 404 error otherwise
 func getBracketOr404(db *gorm.DB, bracketID string, w http.ResponseWriter, r *http.Request) *model.Bracket {
 	bracket := model.Bracket{}
-	if err := db.Preload("Teams").First(&bracket, model.Bracket{BracketID: bracketID}).Error; err != nil {
+	if err := db.Preload("Teams").Preload("AllowedUsers").First(&bracket, model.Bracket{BracketID: bracketID}).Error; err != nil {
 		respondError(w, http.StatusNotFound, err.Error())
 		return nil
 	}
@@ -39,32 +40,97 @@ func saveBracket(db *gorm.DB, w http.ResponseWriter, b *model.Bracket) {
 	}
 }
 
+// canView checks if a user can view a bracket
+func canView(db *gorm.DB, r *http.Request, b *model.Bracket) (bool, error) {
+	c := r.Cookies()[0]
+	token := c.Value
+	session := &model.Session{}
+	if err := db.First(&session, model.Session{Token: token}).Error; err != nil {
+		return false, err
+	}
+
+	if b.Public || b.UserID == session.User {
+		return true, nil
+	}
+
+	for _, user := range b.AllowedUsers {
+		if user.AllowedUser == session.User {
+			return true, nil
+		}
+	}
+
+	return false, errors.New("unauthorized")
+}
+
+// canEdit checks if a user can edit a bracket
+func canEdit(db *gorm.DB, r *http.Request, b *model.Bracket) (bool, error) {
+	c := r.Cookies()[0]
+	token := c.Value
+	session := &model.Session{}
+	if err := db.First(&session, model.Session{Token: token}).Error; err != nil {
+		return false, err
+	}
+
+	if b.UserID == session.User {
+		return true, nil
+	}
+
+	if b.Edit {
+		for _, user := range b.AllowedUsers {
+			if user.AllowedUser == session.User {
+				return true, nil
+			}
+		}
+	}
+
+	return false, errors.New("unauthorized")
+}
+
 // GetBracket Returns a bracket in JSON formatting
 func GetBracket(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 	bracket := findBracket(db, w, r)
 	if bracket != nil {
-		respondJSON(w, http.StatusOK, bracket)
+		canView, err := canView(db, r, bracket)
+		if err != nil {
+			respondError(w, http.StatusUnauthorized, err.Error())
+			return
+		}
+
+		if canView {
+			respondJSON(w, http.StatusOK, bracket)
+		}
 	}
 }
 
 // GetUserBrackets returns all the brackets tied to a user
 func GetUserBrackets(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
+	//Permissions
+	//If the user is the owner of the bracket, they can view it
+
 	userBrackets := []model.Bracket{}
 	vars := mux.Vars(r)
 
-	db.Preload("Teams").Find(&userBrackets, model.Bracket{UserID: vars["userid"]})
+	db.Preload("Teams").Preload("AllowedUsers").Find(&userBrackets, model.Bracket{UserID: vars["userid"]})
 	respondJSON(w, http.StatusOK, userBrackets)
 }
 
 // GetAllBrackets returns all of the brackets in the database
 func GetAllBrackets(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 	brackets := []model.Bracket{}
-	db.Preload("Teams").Find(&brackets)
+	db.Preload("Teams").Preload("AllowedUsers").Find(&brackets)
 	respondJSON(w, http.StatusOK, brackets)
 }
 
 // CreateBracket takes in a json and uses it to create a bracket
 func CreateBracket(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
+	c := r.Cookies()[0]
+	token := c.Value
+	session := &model.Session{}
+	if err := db.First(&session, model.Session{Token: token}).Error; err != nil {
+		respondError(w, http.StatusUnauthorized, err.Error())
+		return
+	}
+
 	bracket := model.Bracket{}
 
 	decoder := json.NewDecoder(r.Body)
@@ -73,6 +139,11 @@ func CreateBracket(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	defer r.Body.Close()
+
+	if bracket.UserID != session.User {
+		respondError(w, http.StatusUnauthorized, "unauthorized")
+		return
+	}
 
 	bracket.Matches = int(math.Ceil(math.Log2(float64(bracket.Size))))
 	bracket.BracketID = uuid.New().String()
@@ -90,15 +161,23 @@ func UpdateBracket(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 	bracket := findBracket(db, w, r)
 
 	if bracket != nil {
-		decoder := json.NewDecoder(r.Body)
-		if err := decoder.Decode(&bracket); err != nil {
-			respondError(w, http.StatusBadRequest, err.Error())
+		edit, err := canEdit(db, r, bracket)
+		if err != nil {
+			respondError(w, http.StatusUnauthorized, err.Error())
 			return
 		}
-		defer r.Body.Close()
 
-		saveBracket(db, w, bracket)
-		respondJSON(w, http.StatusOK, &bracket)
+		if edit {
+			decoder := json.NewDecoder(r.Body)
+			if err := decoder.Decode(&bracket); err != nil {
+				respondError(w, http.StatusBadRequest, err.Error())
+				return
+			}
+			defer r.Body.Close()
+
+			saveBracket(db, w, bracket)
+			respondJSON(w, http.StatusOK, &bracket)
+		}
 	}
 }
 
@@ -111,9 +190,18 @@ func DeleteBracket(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 	if bracket == nil {
 		return
 	}
-	if err := db.Delete(&bracket).Error; err != nil {
-		respondError(w, http.StatusInternalServerError, err.Error())
+
+	edit, err := canEdit(db, r, bracket)
+	if err != nil {
+		respondError(w, http.StatusUnauthorized, err.Error())
 		return
 	}
-	respondJSON(w, http.StatusNoContent, nil)
+
+	if edit {
+		if err := db.Delete(&bracket).Error; err != nil {
+			respondError(w, http.StatusInternalServerError, err.Error())
+			return
+		}
+		respondJSON(w, http.StatusNoContent, nil)
+	}
 }

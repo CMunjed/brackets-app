@@ -1,16 +1,19 @@
 package testing
 
-/*import (
+import (
 	"bytes"
 	"encoding/json"
+
+	//"fmt"
 	"net/http"
+	"net/http/httptest"
 	"testing"
 
 	//"example.com/api/app/model"
 	"github.com/go-playground/assert"
 )
 
-func testWelcome(t *testing.T) {
+func TestWelcome(t *testing.T) {
 
 	//Sign up to create user, sign in to create a user session, call welcome route
 	//	to test the user session to see if it's working
@@ -36,33 +39,36 @@ func testWelcome(t *testing.T) {
 	assert.Equal(t, http.StatusCreated, w.Code)
 
 	//Sign in
-	r, err = http.NewRequest("PUT", "/users/signin", requestBody)
-	if err != nil {
-		t.Fatal(err)
-	}
-	app.Router.ServeHTTP(w, r)
-	assert.Equal(t, http.StatusOK, w.Code)
+	w = httptest.NewRecorder()
+	signedInUser := login(t, app, w)
 
 	//Get user (make sure user exists)
-	url := "/users/" + test_user.Username
+	w1 := httptest.NewRecorder()
+	url := "/users/" + signedInUser.UserID
 
 	r, err = http.NewRequest("GET", url, nil)
 	if err != nil {
 		t.Fatal(err)
 	}
-	app.Router.ServeHTTP(w, r)
+	app.Router.ServeHTTP(w1, r)
 
-	response := decodeUser(w, t)
+	response := decodeUser(w1, t)
 
 	assert.Equal(t, http.StatusOK, w.Code)
 	assert.Equal(t, test_user.Username, response.Username)
 
 	//Welcome
+	w1 = httptest.NewRecorder()
+	signInCookie := w.Result().Cookies()[0]
+	requestBody = bytes.NewBuffer(jsonData)
 	r, err = http.NewRequest("PUT", "/welcome", requestBody)
 	if err != nil {
 		t.Fatal(err)
 	}
-	app.Router.ServeHTTP(w, r)
-	assert.Equal(t, http.StatusOK, w.Code)
+	r.AddCookie(signInCookie)
+	app.Router.ServeHTTP(w1, r)
+
+	//fmt.Println(w1.Body)
+
+	assert.Equal(t, http.StatusOK, w1.Code)
 }
-*/

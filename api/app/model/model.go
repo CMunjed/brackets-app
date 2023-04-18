@@ -13,7 +13,7 @@ type User struct {
 	Username string `json:"username"`
 	Password string `json:"password"`
 	UserID   string `gorm:"unique" json:"userid"`
-	//Status bool   `json:"status"`
+	Admin    bool   `json:"admin"`
 }
 
 type GoogleUser struct {
@@ -47,19 +47,29 @@ type Team struct {
 
 type Bracket struct {
 	gorm.Model
-	Name      string `json:"name"`
-	BracketID string `gorm:"unique" json:"bracketid"`
-	UserID    string `json:"userid"`
-	Size      int    `json:"size"`
-	Matches   int    `json:"matches"`
-	Type      int    `json:"type"`
-	Teams     []Team `json:"teams"`
+	Name         string        `json:"name"`
+	BracketID    string        `gorm:"unique" json:"bracketid"`
+	UserID       string        `json:"userid"`
+	Size         int           `json:"size"`
+	Matches      int           `json:"matches"`
+	Type         int           `json:"type"`
+	Public       bool          `json:"public"`
+	Edit         bool          `json:"edit"`
+	AllowedUsers []AllowedUser `json:"allowedusers"`
+	Teams        []Team        `json:"teams"`
+}
+
+type AllowedUser struct {
+	gorm.Model
+	BracketID   string `json:"bracketid"`
+	AllowedUser string `json:"alloweduser"`
 }
 
 type Session struct {
-	User   string
-	Token  string
-	Expiry time.Time
+	gorm.Model
+	User   string    `json:"user"`
+	Token  string    `gorm:"primaryKey" json:"token"`
+	Expiry time.Time `json:"expiry"`
 }
 
 /*func (s Session) isExpired() bool {
@@ -68,6 +78,6 @@ type Session struct {
 
 // DBMigrate will create and migrate the tables, and then make the some relationships if necessary
 func DBMigrate(db *gorm.DB) *gorm.DB {
-	db.AutoMigrate(&User{}, &Team{}, &Bracket{})
+	db.AutoMigrate(&User{}, &Team{}, &Bracket{}, &Session{})
 	return db
 }

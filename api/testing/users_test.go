@@ -18,12 +18,14 @@ var (
 		Email:    "testemail@test.com",
 		Username: "testuser",
 		Password: "testpassword",
+		Admin:    true,
 	}
 
 	dummy_user = model.User{
 		Email:    "cantsee@me.net",
 		Username: "cantseeme",
 		Password: "cantseeme",
+		Admin:    false,
 	}
 
 	googlesignin_user = model.GoogleUser{
@@ -182,6 +184,7 @@ func TestUpdateEmail(t *testing.T) {
 	app, w := setup()
 
 	user := login(t, app, w)
+	c := w.Result().Cookies()
 	w = httptest.NewRecorder()
 	type update struct {
 		Email string `json:"email"`
@@ -202,6 +205,7 @@ func TestUpdateEmail(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+	r.AddCookie(c[0])
 	app.Router.ServeHTTP(w, r)
 
 	response := decodeUser(w, t)
@@ -234,12 +238,16 @@ func TestDeleteUser(t *testing.T) {
 	dummy_user = decodeUser(w, t)
 
 	w = httptest.NewRecorder()
+	//login(t, app, w)
+	//c := w.Result().Cookies()
+	//w = httptest.NewRecorder()
 	url := "/users/" + dummy_user.UserID
 
 	r, err = http.NewRequest("DELETE", url, nil)
 	if err != nil {
 		t.Fatal(err)
 	}
+	//r.AddCookie(c[0])
 	app.Router.ServeHTTP(w, r)
 
 	assert.Equal(t, http.StatusNoContent, w.Code)
@@ -247,11 +255,15 @@ func TestDeleteUser(t *testing.T) {
 
 func TestGetAllUsers(t *testing.T) {
 	app, w := setup()
+	//login(t, app, w)
+	//c := w.Result().Cookies()
+	//w = httptest.NewRecorder()
 
 	r, err := http.NewRequest("GET", "/users", nil)
 	if err != nil {
 		t.Fatal(err)
 	}
+	//r.AddCookie(c[0])
 	app.Router.ServeHTTP(w, r)
 
 	assert.Equal(t, http.StatusOK, w.Code)

@@ -13,24 +13,34 @@ import (
 // AddTeam adds a team to a bracket and saves said bracket
 func AddTeam(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 	bracket := findBracket(db, w, r)
-	if bracket != nil && len(bracket.Teams) < bracket.Size {
-		team := model.Team{}
-
-		decoder := json.NewDecoder(r.Body)
-		if err := decoder.Decode(&team); err != nil {
-			respondError(w, http.StatusBadRequest, err.Error())
+	if bracket != nil {
+		edit, err := canEdit(db, r, bracket)
+		if err != nil {
+			respondError(w, http.StatusUnauthorized, err.Error())
 			return
 		}
-		defer r.Body.Close()
 
-		team.BracketID = bracket.BracketID
-		team.Position = len(bracket.Teams) + 1
-		team.Index = len(bracket.Teams)
-		team.Round = 1
-		team.Eliminated = false
-		bracket.Teams = append(bracket.Teams, team)
-		saveBracket(db, w, bracket)
-		respondJSON(w, http.StatusCreated, &bracket)
+		if edit {
+			if len(bracket.Teams) < bracket.Size {
+				team := model.Team{}
+
+				decoder := json.NewDecoder(r.Body)
+				if err := decoder.Decode(&team); err != nil {
+					respondError(w, http.StatusBadRequest, err.Error())
+					return
+				}
+				defer r.Body.Close()
+
+				team.BracketID = bracket.BracketID
+				team.Position = len(bracket.Teams) + 1
+				team.Index = len(bracket.Teams)
+				team.Round = 1
+				team.Eliminated = false
+				bracket.Teams = append(bracket.Teams, team)
+				saveBracket(db, w, bracket)
+				respondJSON(w, http.StatusCreated, &bracket)
+			}
+		}
 	}
 }
 
@@ -39,14 +49,22 @@ func GetTeam(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	bracket := findBracket(db, w, r)
 	if bracket != nil {
-		indexString := vars["index"]
-		index, err := strconv.Atoi(indexString)
+		view, err := canView(db, r, bracket)
 		if err != nil {
-			respondError(w, http.StatusBadRequest, err.Error())
+			respondError(w, http.StatusUnauthorized, err.Error())
 			return
 		}
-		team := bracket.Teams[index]
-		respondJSON(w, http.StatusOK, team)
+
+		if view {
+			indexString := vars["index"]
+			index, err := strconv.Atoi(indexString)
+			if err != nil {
+				respondError(w, http.StatusBadRequest, err.Error())
+				return
+			}
+			team := bracket.Teams[index]
+			respondJSON(w, http.StatusOK, team)
+		}
 	}
 }
 

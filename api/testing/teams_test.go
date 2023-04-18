@@ -125,6 +125,10 @@ func TestGetTeam(t *testing.T) {
 	}
 
 	w = httptest.NewRecorder()
+	login(t, app, w)
+	c := w.Result().Cookies()
+	w = httptest.NewRecorder()
+	r.AddCookie(c[0])
 	app.Router.ServeHTTP(w, r)
 
 	assert.Equal(t, w.Code, http.StatusOK)
@@ -159,6 +163,10 @@ func TestCreateTeam(t *testing.T) {
 	}
 
 	w = httptest.NewRecorder()
+	login(t, app, w)
+	c := w.Result().Cookies()
+	w = httptest.NewRecorder()
+	r.AddCookie(c[0])
 	app.Router.ServeHTTP(w, r)
 
 	assert.Equal(t, w.Code, http.StatusCreated)
@@ -198,6 +206,10 @@ func TestUpdateTeam(t *testing.T) {
 	}
 
 	w = httptest.NewRecorder()
+	login(t, app, w)
+	c := w.Result().Cookies()
+	w = httptest.NewRecorder()
+	r.AddCookie(c[0])
 	app.Router.ServeHTTP(w, r)
 
 	assert.Equal(t, w.Code, http.StatusOK)
@@ -222,6 +234,10 @@ func TestDeleteTeam(t *testing.T) {
 	}
 
 	w = httptest.NewRecorder()
+	login(t, app, w)
+	c := w.Result().Cookies()
+	w = httptest.NewRecorder()
+	r.AddCookie(c[0])
 	app.Router.ServeHTTP(w, r)
 
 	assert.Equal(t, w.Code, http.StatusNoContent)

@@ -15,11 +15,14 @@ import (
 
 var (
 	test_bracket = model.Bracket{
-		Name:   "Test_Bracket",
-		UserID: "testuser",
-		Size:   16,
-		Type:   0,
-		Teams:  test_bracket_teams,
+		Name:         "Test_Bracket",
+		UserID:       "testuser",
+		Size:         16,
+		Type:         0,
+		Public:       true,
+		Edit:         false,
+		AllowedUsers: []model.AllowedUser{},
+		Teams:        test_bracket_teams,
 	}
 )
 
@@ -81,6 +84,10 @@ func TestGetAllBrackets(t *testing.T) {
 }
 
 func TestCreateBracket(t *testing.T) {
+	app, w := setup()
+	user := login(t, app, w)
+	test_bracket.UserID = user.Email
+
 	jsonData, err := json.Marshal(test_bracket)
 	if err != nil {
 		t.Fatal(err)
@@ -92,7 +99,9 @@ func TestCreateBracket(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	app, w := setup()
+	c := w.Result().Cookies()
+	w = httptest.NewRecorder()
+	r.AddCookie(c[0])
 
 	app.Router.ServeHTTP(w, r)
 
@@ -102,15 +111,19 @@ func TestCreateBracket(t *testing.T) {
 func TestGetBracket(t *testing.T) {
 
 	app, w := setup()
-
 	test_bracket_id := getTestBracketID(t, app, w)
-	address := "/users/testuser/" + test_bracket_id
+
+	w = httptest.NewRecorder()
+	user := login(t, app, w)
+	address := "/users/" + user.Username + "/" + test_bracket_id
 	r, err := http.NewRequest("GET", address, nil)
 	if err != nil {
 		t.Fatal(err)
 	}
 
+	c := w.Result().Cookies()
 	w = httptest.NewRecorder()
+	r.AddCookie(c[0])
 	app.Router.ServeHTTP(w, r)
 	assert.Equal(t, http.StatusOK, w.Code)
 	response := decodeBracket(w, t)
@@ -142,6 +155,10 @@ func TestUpdateBracket(t *testing.T) {
 	}
 
 	w = httptest.NewRecorder()
+	login(t, app, w)
+	c := w.Result().Cookies()
+	w = httptest.NewRecorder()
+	r.AddCookie(c[0])
 	app.Router.ServeHTTP(w, r)
 
 	assert.Equal(t, http.StatusOK, w.Code)
@@ -152,12 +169,18 @@ func TestUpdateBracket(t *testing.T) {
 }
 
 func TestDeleteBracket(t *testing.T) {
+	app, w := setup()
+	user := login(t, app, w)
+
 	dummy_bracket := model.Bracket{
 		Name:   "YOU CAN'T SEE THIS!!!",
 		Size:   0,
 		Type:   0,
-		UserID: "testuser",
-		Teams:  []model.Team{},
+		Public: false,
+		Edit:   false,
+		UserID: user.Email,
+
+		Teams: []model.Team{},
 	}
 
 	jsonData, err := json.Marshal(dummy_bracket)
@@ -171,7 +194,9 @@ func TestDeleteBracket(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	app, w := setup()
+	c := w.Result().Cookies()
+	w = httptest.NewRecorder()
+	r.AddCookie(c[0])
 
 	app.Router.ServeHTTP(w, r)
 	assert.Equal(t, http.StatusOK, w.Code)
@@ -184,6 +209,7 @@ func TestDeleteBracket(t *testing.T) {
 		t.Fatal(err)
 	}
 	w = httptest.NewRecorder()
+	r.AddCookie(c[0])
 
 	app.Router.ServeHTTP(w, r)
 
@@ -195,6 +221,7 @@ func TestDeleteBracket(t *testing.T) {
 		t.Fatal(err)
 	}
 	w = httptest.NewRecorder()
+	r.AddCookie(c[0])
 	app.Router.ServeHTTP(w, r)
 	assert.Equal(t, http.StatusNoContent, w.Code)
 
@@ -203,6 +230,7 @@ func TestDeleteBracket(t *testing.T) {
 		t.Fatal(err)
 	}
 	w = httptest.NewRecorder()
+	r.AddCookie(c[0])
 	app.Router.ServeHTTP(w, r)
 	assert.Equal(t, http.StatusNotFound, w.Code)
 }
