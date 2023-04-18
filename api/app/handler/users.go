@@ -289,6 +289,7 @@ func RefreshSession(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 
 	//Any way to check the user session after calling the GenerateUserSession function?
 	//Should this respondJSON?
+	respondJSON(w, http.StatusOK, nil)
 }
 
 func isExpired(s *model.Session) bool {
@@ -328,7 +329,7 @@ func Logout(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 	})
 
 	//Unsure how to respondJSON
-	//respondJSON(w, http.StatusOK, )
+	respondJSON(w, http.StatusOK, nil)
 }
 
 func Welcome(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
@@ -367,6 +368,6 @@ func Welcome(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte(fmt.Sprintf("Welcome %s!", userSession.UserID)))
 
 	//Unsure how to respondJSON
-	RefreshSession(db, w, r)
+	//RefreshSession(db, w, r)
 	respondJSON(w, http.StatusOK, userSession)
 }
