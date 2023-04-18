@@ -57,7 +57,7 @@ function decodeJWT(data){
 <script>
   function onSignIn(googleUser) {
     // Get the JWT token from the response data
-    var id_token = googleUser.getAuthResponse().id_token;
+    var id_token = googleUser.getAuthResponse().credentials;
   
     // Send the token to your Go backend using an HTTP POST request
     fetch('https://localhost:3000/', {
