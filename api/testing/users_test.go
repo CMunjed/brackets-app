@@ -178,6 +178,54 @@ func TestUpdatePassword(t *testing.T) {
 	app.Router.ServeHTTP(w, r)
 
 	assert.Equal(t, http.StatusOK, w.Code)
+
+	//Change back
+	w = httptest.NewRecorder()
+	user_update = update{
+		Password: "testpassword",
+	}
+
+	jsonData, err = json.Marshal(user_update)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	requestBody = bytes.NewBuffer(jsonData)
+
+	url = "/users/" + user.UserID
+
+	r, err = http.NewRequest("PUT", url, requestBody)
+	if err != nil {
+		t.Fatal(err)
+	}
+	app.Router.ServeHTTP(w, r)
+
+	response = decodeUser(w, t)
+
+	assert.Equal(t, http.StatusOK, w.Code)
+	assert.Equal(t, user.UserID, response.UserID)
+
+	url = "/users/signin"
+
+	test_user.Password = user_update.Password
+	test_user.UserID = user.UserID
+
+	jsonData, err = json.Marshal(test_user)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	requestBody = bytes.NewBuffer(jsonData)
+
+	r, err = http.NewRequest("PUT", url, requestBody)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	w = httptest.NewRecorder()
+	app.Router.ServeHTTP(w, r)
+
+	assert.Equal(t, http.StatusOK, w.Code)
 }
 
 func TestUpdateEmail(t *testing.T) {
@@ -213,6 +261,35 @@ func TestUpdateEmail(t *testing.T) {
 	assert.Equal(t, http.StatusOK, w.Code)
 	assert.Equal(t, user.UserID, response.UserID)
 	assert.Equal(t, user_update.Email, response.Email)
+
+	//Change back
+	w = httptest.NewRecorder()
+
+	user_update = update{
+		Email: "testemail@test.com",
+	}
+
+	jsonData, err = json.Marshal(user_update)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	requestBody = bytes.NewBuffer(jsonData)
+	url = "/users/" + user.UserID
+
+	r, err = http.NewRequest("PUT", url, requestBody)
+	if err != nil {
+		t.Fatal(err)
+	}
+	r.AddCookie(c[0])
+	app.Router.ServeHTTP(w, r)
+
+	response = decodeUser(w, t)
+
+	assert.Equal(t, http.StatusOK, w.Code)
+	assert.Equal(t, user.UserID, response.UserID)
+	assert.Equal(t, user_update.Email, response.Email)
+	//test_user.Email = "newemail@example.com"
 }
 
 func TestDeleteUser(t *testing.T) {

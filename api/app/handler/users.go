@@ -80,7 +80,7 @@ func SignIn(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 
 	user.UserID = storedUser.UserID
 
-	GenerateUserSession(db, user.Email, w)
+	GenerateUserSession(db, user.UserID, w)
 
 	respondJSON(w, http.StatusOK, user)
 }
@@ -228,12 +228,12 @@ func getUserFromEmailOr404(db *gorm.DB, email string, w http.ResponseWriter, r *
 	return &user
 }
 
-func GenerateUserSession(db *gorm.DB, email string, w http.ResponseWriter) {
+func GenerateUserSession(db *gorm.DB, userid string, w http.ResponseWriter) {
 	sessionToken := uuid.NewString()
 	expiresAt := time.Now().Add(120 * time.Second)
 
 	userSession := &model.Session{
-		User:   email,
+		UserID: userid,
 		Expiry: expiresAt,
 		Token:  sessionToken,
 	}
@@ -280,7 +280,7 @@ func RefreshSession(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 		respondError(w, http.StatusUnauthorized, "Unauthorized")
 	}
 
-	GenerateUserSession(db, userSession.User, w)
+	GenerateUserSession(db, userSession.UserID, w)
 
 	if err := db.Delete(&userSession).Error; err != nil {
 		respondError(w, http.StatusInternalServerError, err.Error())
@@ -364,7 +364,7 @@ func Welcome(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 	}
 
 	// If the session is valid, return the welcome message to the user
-	w.Write([]byte(fmt.Sprintf("Welcome %s!", userSession.User)))
+	w.Write([]byte(fmt.Sprintf("Welcome %s!", userSession.UserID)))
 
 	//Unsure how to respondJSON
 	RefreshSession(db, w, r)

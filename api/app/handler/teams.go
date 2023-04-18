@@ -14,13 +14,11 @@ import (
 func AddTeam(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 	bracket := findBracket(db, w, r)
 	if bracket != nil {
-		edit, err := canEdit(db, r, bracket)
+		err := canEdit(db, r, bracket)
 		if err != nil {
 			respondError(w, http.StatusUnauthorized, err.Error())
 			return
-		}
-
-		if edit {
+		} else {
 			if len(bracket.Teams) < bracket.Size {
 				team := model.Team{}
 
@@ -49,13 +47,11 @@ func GetTeam(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	bracket := findBracket(db, w, r)
 	if bracket != nil {
-		view, err := canView(db, r, bracket)
+		err := canView(db, r, bracket)
 		if err != nil {
 			respondError(w, http.StatusUnauthorized, err.Error())
 			return
-		}
-
-		if view {
+		} else {
 			indexString := vars["index"]
 			index, err := strconv.Atoi(indexString)
 			if err != nil {

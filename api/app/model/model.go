@@ -67,7 +67,7 @@ type AllowedUser struct {
 
 type Session struct {
 	gorm.Model
-	User   string    `json:"user"`
+	UserID string    `json:"userid"`
 	Token  string    `gorm:"primaryKey" json:"token"`
 	Expiry time.Time `json:"expiry"`
 }
@@ -78,6 +78,6 @@ type Session struct {
 
 // DBMigrate will create and migrate the tables, and then make the some relationships if necessary
 func DBMigrate(db *gorm.DB) *gorm.DB {
-	db.AutoMigrate(&User{}, &Team{}, &Bracket{}, &Session{})
+	db.AutoMigrate(&User{}, &Team{}, &Bracket{}, &Session{}, &AllowedUser{})
 	return db
 }

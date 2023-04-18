@@ -85,8 +85,9 @@ func TestGetAllBrackets(t *testing.T) {
 
 func TestCreateBracket(t *testing.T) {
 	app, w := setup()
+	//login(t, app, w)
 	user := login(t, app, w)
-	test_bracket.UserID = user.Email
+	test_bracket.UserID = user.UserID
 
 	jsonData, err := json.Marshal(test_bracket)
 	if err != nil {
@@ -115,7 +116,7 @@ func TestGetBracket(t *testing.T) {
 
 	w = httptest.NewRecorder()
 	user := login(t, app, w)
-	address := "/users/" + user.Username + "/" + test_bracket_id
+	address := "/users/" + user.UserID + "/" + test_bracket_id
 	r, err := http.NewRequest("GET", address, nil)
 	if err != nil {
 		t.Fatal(err)
@@ -178,7 +179,7 @@ func TestDeleteBracket(t *testing.T) {
 		Type:   0,
 		Public: false,
 		Edit:   false,
-		UserID: user.Email,
+		UserID: user.UserID,
 
 		Teams: []model.Team{},
 	}
