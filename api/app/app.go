@@ -53,8 +53,8 @@ func (a *App) setRouters() {
 
 	a.Post("/users/signup", a.SignUp)
 	a.Put("/users/signin", a.SignIn) // Put operation because sessions
-	a.Post("/users/googlesignup", a.GoogleSignUp)
-	a.Put("/users/googlesignin", a.GoogleSignIn)
+	//a.Post("/users/googlesignup", a.GoogleSignUp) //Consolidated into one route
+	a.Post("/users/googlesignin", a.GoogleSignIn)
 	a.Put("/users/logout", a.Logout)
 	a.Put("/users/refresh", a.Refresh)
 	a.Put("/welcome", a.Welcome)
@@ -133,9 +133,9 @@ func (a *App) DeleteUser(w http.ResponseWriter, r *http.Request) {
 }
 
 // Handlers for Google sign-in
-func (a *App) GoogleSignUp(w http.ResponseWriter, r *http.Request) {
+/*func (a *App) GoogleSignUp(w http.ResponseWriter, r *http.Request) {
 	handler.GoogleSignUp(a.DB, w, r)
-}
+}*/
 func (a *App) GoogleSignIn(w http.ResponseWriter, r *http.Request) {
 	handler.GoogleSignIn(a.DB, w, r)
 }
