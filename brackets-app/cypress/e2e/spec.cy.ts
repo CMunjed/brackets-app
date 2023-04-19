@@ -31,19 +31,33 @@ describe('template spec', () => {
     cy.visit('http://localhost:4200/')
     cy.contains('Give our repo a star').click()
   })
+
+  // test slide use
+  it('passes slide toggle click', () => {
+    cy.visit('http://localhost:4200/')
+    cy.contains('Single-Elimination').click()
+  })
+
+  // test compound slide use
+  it('passes compound slide toggle click', () => {
+    cy.visit('http://localhost:4200/')
+    cy.contains('Single-Elimination').click()
+    cy.contains('Single-Elimination').click()
+    cy.contains('Double-Elimination').click()
+  })
+  
   /*
   // test text enter in box
   it('passes text enter test', () => {
     cy.visit('http://localhost:4200/')
-    cy.get('input').contains('').type('8')
+    cy.get('input').contains('How many ').type('8')
   })
 
+  
   it('passes team click test 1', () => {
     cy.visit('http://localhost:4200/')
     cy.contains('Team 1').click()
   })
-
   */
-
   
 })
