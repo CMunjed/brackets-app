@@ -89,6 +89,7 @@ function decodeJWT(data){
         console.error('Authentication failed:', data.error);
       }*/
       console.log(data);
+      this.userAccount = response[googleUser];
     })
     .catch(error => {
     console.error('Promise rejected:', error);
