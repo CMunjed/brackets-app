@@ -64,10 +64,10 @@ function decodeJWT(data){
     // Get the JWT token from the response data
     var id_token = decodeJWT(googleUser.credential);
     //console.log(googleUser);
-    //console.log(id_token)
+    //console.log(id_token);
   
     // Send the token to your Go backend using an HTTP POST request
-    fetch('http://localhost:3000/users/googlesignup', {
+    fetch('http://localhost:3000/users/googlesignin', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'

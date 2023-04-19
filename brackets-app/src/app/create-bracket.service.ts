@@ -24,9 +24,11 @@ class Bracket {
   TeamsList: string[]
   MatchList: Match[]
   Rounds: number
+  isDouble: boolean
 
   constructor(r: number){
     this.Teams = r;
+    this.isDouble = false;
     const m: Match[] = [];
     const t: string[] = [];
     this.MatchList = m;
@@ -150,6 +152,81 @@ export class CreateBracketService {
     }
   }
 
+  createBracketDouble(Teams: number) {
+    // simple check, title must be at least 1 char
+    this.b.isDouble = true;
+    this.b.Teams = Teams;
+    console.log(Teams)
+    for (let i = 1; i <= Teams; i++) {
+      this.b.TeamsList.push("Team " + i.toString());
+    }
+    for (let i = 0; i < Teams; i++) {
+      console.log(this.b.TeamsList[i]);
+    }
+
+    const shuffledTeams = this.shuffle(this.b.TeamsList);
+  
+    for (let i = 0; i < shuffledTeams.length; i += 2) {
+      const team1 = shuffledTeams[i];
+      const team2 = shuffledTeams[i + 1];
+      const newMatch = new Match(team1, team2, 0, 0);
+      this.b.MatchList.push(newMatch);
+    }
+
+
+    this.bl.push(this.b);
+    var t = this.b.Teams;
+    this.b.Rounds = Math.ceil(Math.log2(this.b.Teams)) + 1;
+    for (let i = 1; i <= this.b.Rounds; i++) {
+      if(this.bl.length == this.b.Rounds - 1){
+        break;
+      }
+      t = Math.floor(t/2);
+      if(t == 1){
+        var bTemp = new Bracket(1);
+        bTemp.TeamsList.push("");
+
+        const shuffledTeams = this.shuffle(bTemp.TeamsList);
+  
+        for (let i = 0; i < shuffledTeams.length+2; i += 2) {
+          bTemp.MatchList.push(new Match("","",0,0));
+        }
+        
+
+        this.bl.push(bTemp);
+      }
+      else if(t % 2 != 0){
+        t = t + 1;
+        var bTemp = new Bracket(t);
+        for (let i = 1; i <= t; i++){
+          bTemp.TeamsList.push("");
+        }
+
+        const shuffledTeams = this.shuffle(bTemp.TeamsList);
+  
+        for (let i = 0; i < shuffledTeams.length+2; i += 2) {
+          bTemp.MatchList.push(new Match("","",0,0));
+        }
+
+        this.bl.push(bTemp);
+      }
+      else{
+        var bTemp = new Bracket(t);
+        for (let i = 1; i <= t; i++){
+          bTemp.TeamsList.push("");
+        }
+
+        const shuffledTeams = this.shuffle(bTemp.TeamsList);
+  
+        for (let i = 0; i < shuffledTeams.length+2; i += 2) {
+          bTemp.MatchList.push(new Match("","",0,0));
+        }
+
+        this.bl.push(bTemp);
+      }
+    }
+  }
+
   createPairings(){
     for (let i = 0; i < this.b.TeamsList.length; i++) {
       this.b.MatchList.push(new Match(this.b.TeamsList[i], this.b.TeamsList[i+1],0,0));
@@ -163,6 +240,16 @@ export class CreateBracketService {
 
   progressTeam(team: string){
     if(!this.bl[this.bl.length - 1].TeamsList.includes("")){
+      for(let i = 0; i < this.bl.length; i++){
+        for(let j = 0; j < this.bl[i].MatchList.length; j++){
+          if(this.bl[i].MatchList[j].Member1 == ""){
+            return
+          }
+          else if(this.bl[i].MatchList[j].Member2 == ""){
+            return
+          }
+        }
+      }
       this.winner = team;
       return;
     }

@@ -14,15 +14,22 @@ describe('template spec', () => {
   })
 
 
-  // test click on sign in button
-  it('passes click test 2', () => {
+  // test click on google sign in button
+  it('passes click test 2 (google)', () => {
     cy.visit('http://localhost:4200/')
     cy.contains('Sign in with Google').click()
   })
 
-  it('passes click test 3', () => {
+  // test click on sign in button
+  it('passes click test 3 (sign in)', () => {
     cy.visit('http://localhost:4200/')
-    cy.contains('Star').click()
+    cy.contains('Sign In').click()
+  })
+
+  // test click on github button
+  it('passes click test 4 (github)', () => {
+    cy.visit('http://localhost:4200/')
+    cy.contains('Give our repo a star').click()
   })
   /*
   // test text enter in box
