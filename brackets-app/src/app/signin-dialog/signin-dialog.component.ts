@@ -3,6 +3,8 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { delay } from 'rxjs/operators';
 import { EventEmitter } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+
 
 
 @Component({
@@ -14,11 +16,15 @@ export class SigninDialogComponent {
 
   isLoggedIn: boolean = false;
   onSignInSuccess = new EventEmitter();
+  email: string = '';
+  password: string = '';
 
   constructor(
     public dialogRef: MatDialogRef<SigninDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    private http: HttpClient
+
   ) { 
   
   }
@@ -26,12 +32,24 @@ export class SigninDialogComponent {
   ngOnInit(): void {  
   }
 
-  onSubmit(): void {
+  onSubmit(email: string, password: string): void {
     
     this.isLoggedIn = true;
     this.dialogRef.close();
-    this.snackBar.open('Signed in successfully!', 'Close', { duration: 30000 });
+    //this.snackBar.open('Signed in successfully!', 'Close', { duration: 30000 });
   
+    this.http.post('http://localhost:3000/users/signup', { email, password }).subscribe(
+      (response) => {
+        // Handle successful login
+        console.log('Login successful:', response);
+      },
+      (error) => {
+        // Handle login error
+        console.error('Login error:', error);
+      }
+    );
+
+        console.log(email);
   }
 
 
