@@ -116,3 +116,25 @@
   justify-content: center;
   height: 150px;
 }
+
+.github-star-badge svg {
+  margin-left: 5px;
+}
+
+.github-star-badge a {
+  display: flex;
+  align-items: center;
+}
+
+.github-star-badge span {
+  margin-left: 5px;
+}
+
+#footer {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  font-size: 18px;
+  margin-top: 30px;
+}
