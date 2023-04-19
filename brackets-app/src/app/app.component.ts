@@ -1,6 +1,6 @@
 import { Component, ElementRef, OnInit, ViewChild, ChangeDetectorRef } from '@angular/core';
 import {HttpClient} from '@angular/common/http';
-
+import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import { CreateBracketService } from './create-bracket.service';
 import { MatDialog } from '@angular/material/dialog';
 import { SigninDialogComponent } from './signin-dialog/signin-dialog.component';
@@ -56,12 +56,14 @@ export class AppComponent implements OnInit {
   MatchListOne: Match[] | undefined;
   Winner:string = '";'
 
+  isChecked = false;
+  isCheckedSingle = false;
   eTN:string = "Edit Team Name";
 
   signedIn: boolean = false;
   buttonText = 'Sign In';
 
-  constructor(private dialog: MatDialog, private cbs: CreateBracketService, private snackBar: MatSnackBar) {}
+  constructor(private dialog: MatDialog, private cbs: CreateBracketService, private snackBar: MatSnackBar, private _formBuilder: FormBuilder) {}
 
 openSignInDialog() {
   const dialogRef = this.dialog.open(SigninDialogComponent, {
@@ -135,9 +137,16 @@ openSignInDialog() {
     } else {
       x.style.display = "none";
     }
-    this.cbs.createBracket(
-      this.roundsInputReference.nativeElement.value
-    );
+    if((!this.isChecked) && (this.isCheckedSingle)){
+      this.cbs.createBracket(
+        this.roundsInputReference.nativeElement.value
+      );
+    }
+    else if((this.isChecked) && (!this.isCheckedSingle)){
+      this.cbs.createBracketDouble(
+        this.roundsInputReference.nativeElement.value
+      );
+    }
     this.ngOnInit();
     this.getBracketList();
   }

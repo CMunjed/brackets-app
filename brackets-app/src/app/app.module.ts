@@ -16,7 +16,7 @@ import { HttpClientModule } from '@angular/common/http';
 
 import { CreateBracketService } from './create-bracket.service';
 import { SigninDialogComponent } from './signin-dialog/signin-dialog.component';
-
+import { FormsModule } from '@angular/forms';
 
 @NgModule({
   declarations: [
@@ -33,8 +33,8 @@ import { SigninDialogComponent } from './signin-dialog/signin-dialog.component';
     HttpClientModule,
     BrowserAnimationsModule,
     MatDialogModule, 
-    MatSnackBarModule
-     
+    MatSnackBarModule,
+    FormsModule
     
   ],
   providers: [
