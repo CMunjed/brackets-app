@@ -372,7 +372,11 @@
   
      <!-- <button mat-raised-button  routerLink="/signin">Sign-In Page</button>-->
       
-      
+     <button *ngIf="!signedIn" mat-raised-button (click)="openSignInDialog()">{{buttonText}}</button>
+     <button *ngIf="signedIn" mat-raised-button (click)="onSignOut()">Signed in</button>
+
+
+
   
     </div>
 

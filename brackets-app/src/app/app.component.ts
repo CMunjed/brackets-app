@@ -1,8 +1,10 @@
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild, ChangeDetectorRef } from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 
 import { CreateBracketService } from './create-bracket.service';
-
+import { MatDialog } from '@angular/material/dialog';
+import { SigninDialogComponent } from './signin-dialog/signin-dialog.component';
+import { MatSnackBar } from '@angular/material/snack-bar';
 export interface PeriodicElement {
   name: string;
   position: number;
@@ -40,6 +42,9 @@ const ELEMENT_DATA: PeriodicElement[] = [
   //providers: [SendMatchesService]
 })
 export class AppComponent implements OnInit {
+  
+
+
   title = 'brackets-app';
   displayedColumns: string[] = ['position', 'name', 'weight'];
   dataSource = ELEMENT_DATA;
@@ -53,7 +58,38 @@ export class AppComponent implements OnInit {
 
   eTN:string = "Edit Team Name";
 
-  constructor(private cbs: CreateBracketService) {}
+  signedIn: boolean = false;
+  buttonText = 'Sign In';
+
+  constructor(private dialog: MatDialog, private cbs: CreateBracketService, private snackBar: MatSnackBar) {}
+
+openSignInDialog() {
+  const dialogRef = this.dialog.open(SigninDialogComponent, {
+    width: '400px'
+  });
+
+  dialogRef.afterClosed().subscribe(result => {
+    if (result) {
+      this.onSignInSuccess();
+    }
+  });
+  }
+
+  onSignInSuccess(): void {
+    this.signedIn = true;
+    this.snackBar.open('You have signed in!', '', { duration: 3000 });
+    console.log('Signed in successfully');
+    this.buttonText = 'Signed In';
+    
+  }
+
+  onSignOut(): void {
+    this.signedIn = false;
+    this.snackBar.open('You have signed out!', '', { duration: 3000 });
+  }
+
+
+  
 
   ngOnInit() {
     
@@ -63,6 +99,8 @@ export class AppComponent implements OnInit {
     this.BracketList = this.cbs.getBracketList();
     this.MatchListOne = this.cbs.getBracketList()[0].MatchList;
     this.Winner = this.cbs.getWinner();
+
+
   }
 
   @ViewChild('roundsInput')
