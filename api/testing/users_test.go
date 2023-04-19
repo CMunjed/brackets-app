@@ -29,19 +29,21 @@ var (
 	}
 
 	googlesignin_user = model.GoogleUser{
-		Iss:    "test",
-		Nbf:    123456789,
-		Aud:    "test",
-		Id:     "test",
-		Email:  "test@email.com",
-		Emailv: true,
-		Azp:    "test",
-		Name:   "test",
-		Imgurl: "test",
-		Gname:  "test",
-		Iat:    123456789,
-		Exp:    123456789,
-		Jti:    "test",
+		Token: model.Token{
+			Iss:    "test",
+			Nbf:    123456789,
+			Aud:    "test",
+			Id:     "test",
+			Email:  "test@email.com",
+			Emailv: true,
+			Azp:    "test",
+			Name:   "test",
+			Imgurl: "test",
+			Gname:  "test",
+			Iat:    123456789,
+			Exp:    123456789,
+			Jti:    "test",
+		},
 	}
 )
 

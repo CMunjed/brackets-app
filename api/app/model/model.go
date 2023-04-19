@@ -19,6 +19,27 @@ type User struct {
 type GoogleUser struct {
 	//Not a gorm model bc this won't be saved in DB
 	//gorm.Model
+	/*Aud    string `json:"aud"`
+	Azp    string `json:"azp"`
+	Email  string `json:"email"`
+	Emailv bool   `json:"email_verified"`
+	Exp    int    `json:"exp"`
+	Gname  string `json:"given_name"`
+	//Fname	 string `json:"family_name"`
+	Iat    int    `json:"iat"`
+	Iss    string `json:"iss"`
+	Jti    string `json:"jti"`
+	Name   string `json:"name"`
+	Nbf    int    `json:"nbf"`
+	Imgurl string `json:"picture"`
+	Id     string `json:"sub"`
+	*/
+	Token Token `json:"token"`
+}
+
+type Token struct {
+	//Not a gorm model bc this won't be saved in DB
+	//gorm.Model
 	Aud    string `json:"aud"`
 	Azp    string `json:"azp"`
 	Email  string `json:"email"`

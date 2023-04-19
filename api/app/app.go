@@ -3,9 +3,13 @@ package app
 import (
 	"log"
 	"net/http"
+	"net/http/httputil"
+	"net/url"
+	"os"
 
 	"example.com/api/app/handler"
 	"example.com/api/app/model"
+	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
@@ -28,6 +32,19 @@ func (a *App) Initialize() {
 	a.DB = model.DBMigrate(db)
 	a.Router = mux.NewRouter()
 	a.setRouters()
+}
+
+func angularHandler() http.Handler {
+	origin, _ := url.Parse("http://localhost:4200")
+
+	var director = func(req *http.Request) {
+		req.Header.Add("X-Forwarded-Host", req.Host)
+		req.Header.Add("X-Origin-Host", origin.Host)
+		req.URL.Scheme = "http"
+		req.URL.Host = origin.Host
+	}
+
+	return &httputil.ReverseProxy{Director: director}
 }
 
 // Set all required routers
@@ -56,6 +73,23 @@ func (a *App) setRouters() {
 	a.Get("/users/{userid}/{bracketid}/teams/{index}", a.GetTeam)
 	a.Put("/users/{userid}/{bracketid}/teams/{index}", a.UpdateTeam)
 	a.Delete("/users/{userid}/{bracketid}/teams/{index}", a.DeleteTeam)
+	a.Router.PathPrefix("/").Handler(angularHandler()).Methods("GET")
+}
+
+func (a *App) getHandlers() http.Handler {
+	return handlers.LoggingHandler(os.Stdout,
+		handlers.CORS(
+			handlers.AllowCredentials(),
+			handlers.AllowedHeaders([]string{"X-Requested-With", "Content-Type", "Authorization",
+				"DNT", "Keep-Alive", "User-Agent", "X-Requested-With", "If-Modified-Since",
+				"Cache-Control", "Content-Range", "Range"}),
+			handlers.AllowedMethods([]string{"GET", "POST", "PUT", "HEAD", "OPTIONS"}),
+			handlers.AllowedOrigins([]string{"http://localhost:4200"}),
+			handlers.ExposedHeaders([]string{"DNT", "Keep-Alive", "User-Agent",
+				"X-Requested-With", "If-Modified-Since", "Cache-Control",
+				"Content-Type", "Content-Range", "Range", "Content-Disposition"}),
+			handlers.MaxAge(86400),
+		)(a.Router))
 }
 
 // Wrap the router for GET method
@@ -160,5 +194,5 @@ func (a *App) DeleteTeam(w http.ResponseWriter, r *http.Request) {
 
 // Run the app on it's router
 func (a *App) Run(host string) {
-	log.Fatal(http.ListenAndServe(host, a.Router))
+	log.Fatal(http.ListenAndServe(host, a.getHandlers()))
 }

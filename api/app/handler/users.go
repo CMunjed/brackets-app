@@ -164,16 +164,20 @@ func GoogleSignUp(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	//fmt.Println(gdata.Token)
+
 	user := &model.User{
-		Email:    gdata.Email,
-		Username: gdata.Email[:strings.Index(gdata.Email, "@")],
+		Email:    gdata.Token.Email,
+		Username: gdata.Token.Email[:strings.Index(gdata.Token.Email, "@")],
 		Password: uuid.New().String(), //Generates a random UUID as a password, since the user will never log into this account without google
 		//UserID:   uuid.New().String(),
 	}
 
-	/*email := gdata.Email
-	username := gdata.Email[:strings.Index(gdata.Email, "@")-1]
-	password := uuid.New().String()*/
+	/*
+		email := gdata.Email
+		username := gdata.Email[:strings.Index(gdata.Email, "@")-1]
+		password := uuid.New().String()
+	*/
 
 	jsonData, err := json.Marshal(user)
 	if err != nil {
@@ -188,8 +192,6 @@ func GoogleSignUp(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 	}
 
 	SignUp(db, w, newRequest)
-
-	//respondJSON(w, http.StatusOK, user)
 }
 
 func GoogleSignIn(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
@@ -206,7 +208,7 @@ func GoogleSignIn(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 	}
 
 	//username := gdata.Email[:strings.Index(gdata.Email, "@")]
-	email := gdata.Email
+	email := "" //gdata.Email
 	storedUser := getUserFromEmailOr404(db, email, w, r)
 	if storedUser == nil {
 		//respondError(w, http.StatusInternalServerError, err.Error())
