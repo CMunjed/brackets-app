@@ -46,18 +46,4 @@ describe('template spec', () => {
     cy.contains('Double-Elimination').click()
   })
   
-  /*
-  // test text enter in box
-  it('passes text enter test', () => {
-    cy.visit('http://localhost:4200/')
-    cy.get('input').contains('How many ').type('8')
-  })
-
-  
-  it('passes team click test 1', () => {
-    cy.visit('http://localhost:4200/')
-    cy.contains('Team 1').click()
-  })
-  */
-  
 })
