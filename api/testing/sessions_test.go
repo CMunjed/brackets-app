@@ -22,7 +22,7 @@ func TestWelcome(t *testing.T) {
 	app, w := setup()
 
 	//Convert test user to json
-	jsonData, err := json.Marshal(test_user)
+	jsonData, err := json.Marshal(test_user2)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -40,13 +40,22 @@ func TestWelcome(t *testing.T) {
 
 	//Sign in
 	//w = httptest.NewRecorder()
-	signedInUser := login(t, app, w)
+
+	requestBody := bytes.NewBuffer(jsonData)
+	r, err := http.NewRequest("POST", "/users/signup", requestBody)
+	if err != nil {
+		t.Fatal(err)
+	}
+	app.Router.ServeHTTP(w, r)
+
+	w = httptest.NewRecorder()
+	signedInUser := login2(t, app, w)
 
 	//Get user (make sure user exists)
 	w1 := httptest.NewRecorder()
 	url := "/users/" + signedInUser.UserID
 
-	r, err := http.NewRequest("GET", url, nil)
+	r, err = http.NewRequest("GET", url, nil)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -55,12 +64,12 @@ func TestWelcome(t *testing.T) {
 	response := decodeUser(w1, t)
 
 	assert.Equal(t, http.StatusOK, w.Code)
-	assert.Equal(t, test_user.Username, response.Username)
+	assert.Equal(t, test_user2.Username, response.Username)
 
 	//Welcome
 	w1 = httptest.NewRecorder()
 	signInCookie := w.Result().Cookies()[0]
-	requestBody := bytes.NewBuffer(jsonData)
+	requestBody = bytes.NewBuffer(jsonData)
 	r, err = http.NewRequest("PUT", "/welcome", requestBody)
 	if err != nil {
 		t.Fatal(err)

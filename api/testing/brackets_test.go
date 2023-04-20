@@ -95,7 +95,7 @@ func TestCreateBracket(t *testing.T) {
 	}
 
 	requestBody := bytes.NewBuffer(jsonData)
-	r, err := http.NewRequest("POST", "/users/testuser/brackets", requestBody)
+	r, err := http.NewRequest("POST", "/users/"+user.UserID+"/brackets", requestBody)
 	if err != nil {
 		t.Fatal(err)
 	}

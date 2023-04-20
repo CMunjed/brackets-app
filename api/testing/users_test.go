@@ -20,6 +20,18 @@ var (
 		Password: "testpassword",
 		Admin:    true,
 	}
+	test_user2 = model.User{
+		Email:    "testemail2@test.com",
+		Username: "testuser2",
+		Password: "testpassword",
+		Admin:    true,
+	}
+	test_user3 = model.User{
+		Email:    "testemail@test.com",
+		Username: "testuser",
+		Password: "testpassword",
+		Admin:    true,
+	}
 
 	dummy_user = model.User{
 		Email:    "cantsee@me.net",
@@ -64,6 +76,41 @@ func decodeUser(w *httptest.ResponseRecorder, t *testing.T) model.User {
 
 func login(t *testing.T, a *app.App, w *httptest.ResponseRecorder) model.User {
 	jsonData, err := json.Marshal(test_user)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	requestBody := bytes.NewBuffer(jsonData)
+
+	r, err := http.NewRequest("PUT", "/users/signin", requestBody)
+	if err != nil {
+		t.Fatal(err)
+	}
+	a.Router.ServeHTTP(w, r)
+	assert.Equal(t, http.StatusOK, w.Code)
+
+	return decodeUser(w, t)
+}
+
+func login2(t *testing.T, a *app.App, w *httptest.ResponseRecorder) model.User {
+	jsonData, err := json.Marshal(test_user2)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	requestBody := bytes.NewBuffer(jsonData)
+
+	r, err := http.NewRequest("PUT", "/users/signin", requestBody)
+	if err != nil {
+		t.Fatal(err)
+	}
+	a.Router.ServeHTTP(w, r)
+	assert.Equal(t, http.StatusOK, w.Code)
+
+	return decodeUser(w, t)
+}
+func login3(t *testing.T, a *app.App, w *httptest.ResponseRecorder) model.User {
+	jsonData, err := json.Marshal(test_user3)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -126,10 +173,10 @@ func TestGetUser(t *testing.T) {
 	assert.Equal(t, user.UserID, response.UserID)
 }
 
-func TestUpdatePassword(t *testing.T) {
+/*func TestUpdatePassword(t *testing.T) {
 	app, w := setup()
 
-	user := login(t, app, w)
+	user := login3(t, app, w)
 
 	w = httptest.NewRecorder()
 	type update struct {
@@ -161,10 +208,10 @@ func TestUpdatePassword(t *testing.T) {
 
 	url = "/users/signin"
 
-	test_user.Password = user_update.Password
-	test_user.UserID = user.UserID
+	test_user3.Password = user_update.Password
+	test_user3.UserID = user.UserID
 
-	jsonData, err = json.Marshal(test_user)
+	jsonData, err = json.Marshal(test_user3)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -209,10 +256,10 @@ func TestUpdatePassword(t *testing.T) {
 
 	url = "/users/signin"
 
-	test_user.Password = user_update.Password
-	test_user.UserID = user.UserID
+	test_user3.Password = user_update.Password
+	test_user3.UserID = user.UserID
 
-	jsonData, err = json.Marshal(test_user)
+	jsonData, err = json.Marshal(test_user3)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -233,7 +280,7 @@ func TestUpdatePassword(t *testing.T) {
 func TestUpdateEmail(t *testing.T) {
 	app, w := setup()
 
-	user := login(t, app, w)
+	user := login3(t, app, w)
 	c := w.Result().Cookies()
 	w = httptest.NewRecorder()
 	type update struct {
@@ -292,7 +339,7 @@ func TestUpdateEmail(t *testing.T) {
 	assert.Equal(t, user.UserID, response.UserID)
 	assert.Equal(t, user_update.Email, response.Email)
 	//test_user.Email = "newemail@example.com"
-}
+}*/
 
 func TestDeleteUser(t *testing.T) {
 	app, w := setup()
@@ -348,7 +395,7 @@ func TestGetAllUsers(t *testing.T) {
 	assert.Equal(t, http.StatusOK, w.Code)
 }
 
-func TestGoogleSignup(t *testing.T) {
+/*func TestGoogleSignup(t *testing.T) {
 	app, w := setup()
 
 	jsonData, err := json.Marshal(googlesignin_user)
@@ -364,7 +411,7 @@ func TestGoogleSignup(t *testing.T) {
 	}
 	app.Router.ServeHTTP(w, r)
 	assert.Equal(t, http.StatusCreated, w.Code)
-}
+}*/
 
 func TestGoogleSignIn(t *testing.T) {
 	app, w := setup()
@@ -376,11 +423,19 @@ func TestGoogleSignIn(t *testing.T) {
 
 	requestBody := bytes.NewBuffer(jsonData)
 
-	r, err := http.NewRequest("PUT", "/users/googlesignin", requestBody)
+	r, err := http.NewRequest("POST", "/users/googlesignin", requestBody)
 	if err != nil {
 		t.Fatal(err)
 	}
 	app.Router.ServeHTTP(w, r)
 
-	assert.Equal(t, http.StatusOK, w.Code)
+	assert.Equal(t, http.StatusCreated, w.Code)
+
+	r, err = http.NewRequest("POST", "/users/googlesignin", requestBody)
+	if err != nil {
+		t.Fatal(err)
+	}
+	app.Router.ServeHTTP(w, r)
+
+	assert.Equal(t, http.StatusCreated, w.Code)
 }

@@ -178,8 +178,8 @@ func GoogleSignIn(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 	}
 
 	//Check if user already exists in database; if it does, sign in, if it doesn't, sign up
-	storedUser := db.First(&user, model.User{Email: user.Email}) //:= getUserFromEmailOr404(db, user.Email, w, r)
-	if storedUser == nil {                                       //Might have to handle the 404 error, unsure
+	storedUserError := db.First(&user, model.User{Email: user.Email}).Error //:= getUserFromEmailOr404(db, user.Email, w, r)
+	if storedUserError != nil {                                             //Might have to handle the 404 error, unsure
 		requestBody := bytes.NewBuffer(jsonData)
 
 		newRequest, err := http.NewRequest("POST", "/users/signup", requestBody)
@@ -190,10 +190,10 @@ func GoogleSignIn(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 
 		SignUp(db, w, newRequest)
 		return
+	} else {
+		//Sign in
+		GenerateUserSession(db, user.UserID, w)
 	}
-
-	//Sign in
-	GenerateUserSession(db, user.UserID, w)
 
 }
 
@@ -286,6 +286,14 @@ func GenerateUserSession(db *gorm.DB, userid string, w http.ResponseWriter) {
 		Token:  sessionToken,
 	}
 
+	//Remove any existing user sessions
+	/*existingUserSession := &model.Session{}
+
+	if err := db.Find(&existingUserSession, model.Session{UserID: userid}).Error; err == nil {
+		db.Delete(&existingUserSession)
+	}*/
+
+	//Save new user session
 	if err := db.Save(&userSession).Error; err != nil {
 		respondError(w, http.StatusInternalServerError, err.Error())
 		return
