@@ -43,7 +43,7 @@ const ELEMENT_DATA: PeriodicElement[] = [
 })
 export class AppComponent implements OnInit {
   
-
+  public userAccount: any = null;
 
   title = 'brackets-app';
   displayedColumns: string[] = ['position', 'name', 'weight'];

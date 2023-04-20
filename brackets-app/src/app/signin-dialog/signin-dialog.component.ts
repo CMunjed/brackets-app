@@ -16,8 +16,8 @@ export class SigninDialogComponent {
 
   isLoggedIn: boolean = false;
   onSignInSuccess = new EventEmitter();
-  email: string = '';
-  password: string = '';
+  email: string = 'conner123@gmail.com';
+  password: string = 'Ihopethisworks';
 
   constructor(
     public dialogRef: MatDialogRef<SigninDialogComponent>,
