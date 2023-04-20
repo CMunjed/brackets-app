@@ -40,7 +40,7 @@ CEN3031 - Group 74 <br />
       - ```ng serve```
 5. Go to [http://localhost:4200](http://localhost:4200) to see the webpage
 
-6.How to run website
+6. How to run website
 
 - Click on Insert Bracket Name to rename
 - Click on How many teams text box to enter number of teams(ex. recommend use 8 shows enough matchups and not to many to progress)
