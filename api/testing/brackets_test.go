@@ -248,3 +248,36 @@ func TestGetUserBracket(t *testing.T) {
 
 	assert.Equal(t, http.StatusOK, w.Code)
 }
+
+func TestUnauthorizedBracketEdit(t *testing.T) {
+	//Sign Up a new user
+	app, w := setup()
+	user := model.User{
+		Username: "scriptkid",
+		Password: "123456",
+		Email:    "hackerman123@live.com",
+	}
+
+	signup(t, app, w, user)
+
+	// Login as new user
+	w = httptest.NewRecorder()
+	loginUser(t, app, w, user)
+
+	// Try and edit the test bracket
+	c := w.Result().Cookies()
+	w = httptest.NewRecorder()
+	test_bracket_id := getTestBracketID(t, app, w)
+	url := "/users/testuser/"
+	url += test_bracket_id
+	r, err := http.NewRequest("PUT", url, nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	w = httptest.NewRecorder()
+	r.AddCookie(c[0])
+	app.Router.ServeHTTP(w, r)
+
+	assert.Equal(t, http.StatusUnauthorized, w.Code)
+}

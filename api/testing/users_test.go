@@ -74,6 +74,41 @@ func decodeUser(w *httptest.ResponseRecorder, t *testing.T) model.User {
 	return response
 }
 
+func signup(t *testing.T, a *app.App, w *httptest.ResponseRecorder, user model.User) {
+	jsonData, err := json.Marshal(user)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	requestBody := bytes.NewBuffer(jsonData)
+
+	r, err := http.NewRequest("POST", "/users/signup", requestBody)
+	if err != nil {
+		t.Fatal(err)
+	}
+	a.Router.ServeHTTP(w, r)
+	assert.Equal(t, http.StatusCreated, w.Code)
+}
+
+func loginUser(t *testing.T, a *app.App, w *httptest.ResponseRecorder, user model.User) model.User {
+	jsonData, err := json.Marshal(user)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	requestBody := bytes.NewBuffer(jsonData)
+
+	r, err := http.NewRequest("PUT", "/users/signin", requestBody)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	a.Router.ServeHTTP(w, r)
+	assert.Equal(t, http.StatusOK, w.Code)
+
+	return decodeUser(w, t)
+}
+
 func login(t *testing.T, a *app.App, w *httptest.ResponseRecorder) model.User {
 	jsonData, err := json.Marshal(test_user)
 	if err != nil {
@@ -340,6 +375,47 @@ func TestUpdateEmail(t *testing.T) {
 	assert.Equal(t, user_update.Email, response.Email)
 	//test_user.Email = "newemail@example.com"
 }*/
+
+func TestUpdateUser(t *testing.T) {
+	app, w := setup()
+
+	signup(t, app, w, test_user3)
+	w = httptest.NewRecorder()
+
+	user := login3(t, app, w)
+	c := w.Result().Cookies()
+	w = httptest.NewRecorder()
+	type update struct {
+		Email    string `json:"email"`
+		Password string `json:"password"`
+	}
+	user_update := update{
+		Email:    "electronic@arts.com",
+		Password: "newpassword",
+	}
+
+	jsonData, err := json.Marshal(user_update)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	requestBody := bytes.NewBuffer(jsonData)
+	url := "/users/" + user.UserID
+
+	r, err := http.NewRequest("PUT", url, requestBody)
+	if err != nil {
+		t.Fatal(err)
+	}
+	r.AddCookie(c[0])
+	app.Router.ServeHTTP(w, r)
+
+	response := decodeUser(w, t)
+
+	assert.Equal(t, http.StatusOK, w.Code)
+	assert.Equal(t, user.UserID, response.UserID)
+	assert.Equal(t, user_update.Email, response.Email)
+	assert.Equal(t, user_update.Password, response.Password)
+}
 
 func TestDeleteUser(t *testing.T) {
 	app, w := setup()
