@@ -15,3 +15,25 @@ Carlos Avila - Back-end <br />
 Connor Munjed - Back-end <br />
 CEN3031 - Group 74 <br />
 
+## How To Run
+1. Needed Software:
+   - [Golang](https://go.dev/dl/)
+   - [Node.js](https://nodejs.org/en/download)
+   - GCC
+     - If you are using a Windows machine, follow [this](https://code.visualstudio.com/docs/cpp/config-mingw) link to install GCC
+     - If you are using a Mac machine, follow [this](http://cs.millersville.edu/~gzoppetti/InstallingGccMac.html) link to install GCC
+     - If you are using a Linux machine, follow [this](https://www.geeksforgeeks.org/how-to-install-gcc-compiler-on-linux/) link to install GCC
+    - [SQLite 3](https://sqlite.org/download.html)
+
+2. Clone the repository from the repository
+3. Open a terminal in the project folder in your local machine, and run the following commands:
+    - ```go mod tidy```
+    - ```cd brackets-app```
+    - ```npm update```
+4. Once all of the dependencies have been installed, run the following commands in two separate terminals to start both frontend and backend servers starting from the project root directory
+    - Backend Server  
+      - ```go run .```
+    - Frontend Server
+      - ```cd brackets-app```
+      - ```ng serve```
+5. Go to [http://localhost:4200](http://localhost:4200) to see the webpage
