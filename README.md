@@ -1,5 +1,4 @@
 # brackets-app
-This is our brackets app for CEN3031 Intro to Software Engineering Spring 2023 @ UF.
 
 ## Project Description
 This is an online tournament bracket creation tool with an emphasis on flexibility, customizability, and ease of use. <br /><br />
