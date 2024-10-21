@@ -12,7 +12,6 @@ Logan Bialek - Front-end <br />
 Shawn Banks - Front-end <br />
 Carlos Avila - Back-end <br />
 Connor Munjed - Back-end <br />
-CEN3031 - Group 74 <br />
 
 ## How To Run
 1. Needed Software:
